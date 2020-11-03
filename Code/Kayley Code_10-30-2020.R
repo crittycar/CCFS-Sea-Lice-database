@@ -18,6 +18,8 @@
 # Please look for ##******************* which indicates that there is something
 # for you to add/edit in the code (ex. "groupedsites name",)
 
+# hi my name is critty
+
 # All data/plots are currently based on 2020 data. 
 
 ###############################################################
