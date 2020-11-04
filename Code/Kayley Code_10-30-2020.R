@@ -18,11 +18,7 @@
 # Please look for ##******************* which indicates that there is something
 # for you to add/edit in the code (ex. "groupedsites name",)
 
-# hi my name is critty
-# hi critter
-#hello again
-#test
-# All data/plots are currently based on 2020 data. 
+############ All data/plots are currently based on 2020 data. 
 
 ###############################################################
 # Can search with ctrl F for main headings or their subheadings :
