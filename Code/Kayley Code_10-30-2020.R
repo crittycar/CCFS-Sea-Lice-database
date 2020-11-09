@@ -47,14 +47,16 @@
 
 ##SET UP##
 #************** change to your own directory
-dir.in<-"C:/Users/mackB/Downloads/Formack/Formack/WorkingCode"
-dir.outt<-"C:/Users/mackB/Downloads/Formack/Formack/WorkingCode/codeoutput"
-dir.plot<-"C:/Users/mackB/Downloads/Formack/Formack/WorkingCode/codeoutput/plots"
+dir.in<-"C:/Users/user/OneDrive - Quest University Canada/Desktop/CCFS-Sea-Lice-database/Code/WorkingCode"
+dir.outt<-"C:/Users/user/OneDrive - Quest University Canada/Desktop/CCFS-Sea-Lice-database/Code/OutputCode"
+dir.plot<-"C:/Users/user/OneDrive - Quest University Canada/Desktop/CCFS-Sea-Lice-database/OutputPlots"
+getwd()
 
 setwd(dir.in)
 getwd()
-install.packages(c("boot", "MASS","plyr","dplyr", "ggplot2", "tibble", "car", "reshape2",
-                   "epitools", "readxl", "tidyverse"))
+#unhashtag to install packages below 
+#install.packages(c("boot", "MASS","plyr","dplyr", "ggplot2", "tibble", "car", "reshape2",
+ #                  "epitools", "readxl", "tidyverse"))
 library(boot)
 library(MASS)
 library(plyr)
@@ -74,6 +76,7 @@ library(tidyverse)
 
 #bestclay <- read_xlsx("Best.Clayoquot.Sealice.data.2019.xlsx", sheet = "clayoquot.sealice.fish.data", 
                       #col_names = TRUE)
+forplots2020 <- read.csv(file = "Data/forplots2020.csv", header=T, strip.white = TRUE, na.strings = c("NA",""), stringsAsFactors = FALSE)
 
 #************************ 
 #change the year if necessary
