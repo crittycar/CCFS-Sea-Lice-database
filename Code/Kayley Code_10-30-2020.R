@@ -48,18 +48,19 @@
 ##SET UP##
 #first make sure R and R studio are up to date
 #Update R
-install.packages("installr")
-library(installr)
-updateR()
+#install.packages("installr")
+#library(installr)
+#updateR()
 #update r studio
 #From within RStudio, go to Help > Check for Updates to install newer version of RStudio (if available, optional).
 #************** change to your own directory
+dir.main <- "C:/Users/user/OneDrive - Quest University Canada/Desktop/CCFS-Sea-Lice-database"
 dir.in<-"C:/Users/user/OneDrive - Quest University Canada/Desktop/CCFS-Sea-Lice-database/Code/WorkingCode"
-dir.outt<-"C:/Users/user/OneDrive - Quest University Canada/Desktop/CCFS-Sea-Lice-database/Code/OutputCode"
-dir.plot<-"C:/Users/user/OneDrive - Quest University Canada/Desktop/CCFS-Sea-Lice-database/OutputPlots"
+dir.out<-"C:/Users/user/OneDrive - Quest University Canada/Desktop/CCFS-Sea-Lice-database/Code/OutputCode"
+dir.fig<-"C:/Users/user/OneDrive - Quest University Canada/Desktop/CCFS-Sea-Lice-database/OutputFigures"
 getwd()
 
-setwd(dir.in)
+setwd(dir.main)
 getwd()
 #unhashtag to install packages below 
 #install.packages(c("boot", "MASS","plyr","dplyr", "ggplot2", "tibble", "car", "reshape2",
@@ -84,6 +85,7 @@ library(tidyverse)
 #bestclay <- read_xlsx("Best.Clayoquot.Sealice.data.2019.xlsx", sheet = "clayoquot.sealice.fish.data", 
                       #col_names = TRUE)
 forplots2020 <- read.csv(file = "Data/forplots2020.csv", header=T, strip.white = TRUE, na.strings = c("NA",""), stringsAsFactors = FALSE)
+view((forplots2020))
 
 #************************ 
 #change the year if necessary
@@ -94,7 +96,7 @@ best2020<-data.frame(subset(data2020, species == "coho"|species == "chum"|specie
                               species == "sockeye"|species == "pink"))
 best2020$year<-as.numeric(best2020$year)
 
-#***********************
+#adjusting to as.date and as.numeric***********************
 best2020$date <- as.Date(with(best2020, paste(year, month, day, sep="-")), "%Y-%m-%d")
 best2020$height<-as.numeric(best2020$height)
 best2020<-data.frame(best2020)
@@ -203,10 +205,12 @@ rownames(allmeanlice) <- c("Cypre River", "North Meares", "Ritchie Bay", "Tsapee
 
 #$% issue with Total showing up....
 #making a shareable table of the lice means
-setwd(dir.outt)
+setwd(dir.fig)
+getwd()
 write.csv(meanlicetablewithtotalse, file = "meanlicetable.bysite.csv")
 write.csv(licetable, file = "totalsumslicetable.csv")
 
+setwd(dir.main)
 #Interlude for ~PLOTTING~
 
 #BARPLOT OF MEAN LICE BY LOCATION
@@ -230,7 +234,7 @@ licestagelegend<-legend("topright", cex=0.6, legend = c("Total Lice", "Motile", 
 # Resuming ~VECTOR CREATION~
 
 ##JULIAN DATES
-
+view(best2020)
 #making a table with weekly intervals.
 juliandates<-julian(best2020$date)
 firstday<-min(juliandates)
@@ -322,17 +326,18 @@ notmissingchum<-!is.na(meandatetable$meanflchum)
 presentmeanflchum<-meandatetable[notmissingchum,]
 
 #table of mean forklength and mean lice numbers
-setwd(dir.outt)
+setwd(dir.fig)
 write.csv(meandatetable, "mean.lice.and.forklength.by.date.2020.csv")
 
+view(meandatetable)
 #daily forklength for all species.
-yrangefl<-0:140
+yrangefl<-0:95
 xrangefl<-meandatetable$date
-par(mar = c(5,5,5,2))
-plot(meandatetable$meanfl~meandatetable$date, cex.lab = 1.5 , cex.axis = 1.4,ylab = "Mean Forklength (mm)", xlab = "",  main = "Forklength of Clayoquot Salmon, 2020" )
+par(mar = c(5,5,5,2), xpd = TRUE)
+plot(meandatetable$meanfl~meandatetable$date, cex.lab = 1, pch = 19 , cex.axis = 1.4,ylab = "Mean Forklength (mm)", xlab = "Months",  main = "Weekly Forklength of Clayoquot Salmon, 2020", ylim=c(40,95), type = "n")
 
 #if you want lines for all species, use code below
-lines(meandatetable$meanfl~meandatetable$date, na.pass=TRUE, lwd = 2, lty = 3)
+#lines(meandatetable$meanfl~meandatetable$date, lwd = 2, lty = 2)
 
 
 #if you want broken lines for Coho, use code below
@@ -341,20 +346,24 @@ lines(meandatetable$meanfl~meandatetable$date, na.pass=TRUE, lwd = 2, lty = 3)
 #Lines to put on to one plot
 
 #COHO
-lines(presentmeanflcoho$meanflcoho~presentmeanflcoho$date, na.pass=TRUE, lwd = 2, lty = 2, col = "darkgray")
+points(presentmeanflcoho$meanflcoho~presentmeanflcoho$date, col = "black", pch = 19)
+lines(presentmeanflcoho$meanflcoho~presentmeanflcoho$date, lwd = 2, lty = 2, col = "black")
 #abline(lm(presentmeanflcoho$meanflcoho~presentmeanflcoho$date, na.pass=TRUE, lwd = 2, lty = 1, col = "darkgray"))
 
 #CHUM
-lines(presentmeanflchum$meanflchum~presentmeanflchum$date, na.pass=TRUE, lwd = 2, col = "dodgerblue")
+points(presentmeanflchum$meanflchum~presentmeanflchum$date,pch = 19, col = "dodgerblue")
+lines(presentmeanflchum$meanflchum~presentmeanflchum$date, na.pass=TRUE, lwd = 2, col = "dodgerblue", lty = 2)
 
 #CHINOOK
-lines(presentmeanflchinook$meanflchinook~presentmeanflchinook$date, na.pass=TRUE, lwd = 2, col = "red", na.rm = TRUE, lty = 3)
+points(presentmeanflchinook$meanflchinook~presentmeanflchinook$date, pch = 19, col = "red")
+lines(presentmeanflchinook$meanflchinook~presentmeanflchinook$date, lwd = 2, col = "red", lty = 2)
 
 #run this before making legend because defines the species being looked at
-listspeciesinterest<-c("chum", "coho", "chinook")
+listspeciesinterest<-c("Chum", "Coho", "Chinook")
 
 #Legend
-legend("topleft", legend = listspeciesinterest, col = c("dodgerblue", "lightgray","red"), cex = 0.7, lwd = 1, title = "Species", lty = c(1,2,3))
+legend("topright", legend = listspeciesinterest, col = c("dodgerblue", "black","red"), cex = 1, lwd = 1, title = "Species", lty = c(1,2,3))
+
 #May want to put 2018 on there too in diff colour. 
 
 #One plot for each species
