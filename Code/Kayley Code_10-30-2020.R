@@ -46,6 +46,13 @@
 ##############################################################
 
 ##SET UP##
+#first make sure R and R studio are up to date
+#Update R
+install.packages("installr")
+library(installr)
+updateR()
+#update r studio
+#From within RStudio, go to Help > Check for Updates to install newer version of RStudio (if available, optional).
 #************** change to your own directory
 dir.in<-"C:/Users/user/OneDrive - Quest University Canada/Desktop/CCFS-Sea-Lice-database/Code/WorkingCode"
 dir.outt<-"C:/Users/user/OneDrive - Quest University Canada/Desktop/CCFS-Sea-Lice-database/Code/OutputCode"
