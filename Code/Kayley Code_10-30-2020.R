@@ -56,7 +56,7 @@
 #************** change to your own directory
 
 #--------------make project folders and folder paths----------------------------
-
+#set your wd here
 
 wd <- getwd()  # working directory
 
@@ -80,7 +80,7 @@ forplots2020.path <- paste(wd, "/", "Data", sep = "")
 
 
 
-#---------------------Below, we upload and clean the philly crime data----------
+#---------------------Below, we upload and clean the  data----------
 
 
 # time to upload the datas into folder
