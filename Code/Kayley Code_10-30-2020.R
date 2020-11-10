@@ -54,14 +54,41 @@
 #update r studio
 #From within RStudio, go to Help > Check for Updates to install newer version of RStudio (if available, optional).
 #************** change to your own directory
-dir.main <- "C:/Users/user/OneDrive - Quest University Canada/Desktop/CCFS-Sea-Lice-database"
-dir.in<-"C:/Users/user/OneDrive - Quest University Canada/Desktop/CCFS-Sea-Lice-database/Code/WorkingCode"
-dir.out<-"C:/Users/user/OneDrive - Quest University Canada/Desktop/CCFS-Sea-Lice-database/Code/OutputCode"
-dir.fig<-"C:/Users/user/OneDrive - Quest University Canada/Desktop/CCFS-Sea-Lice-database/OutputFigures"
-getwd()
 
-setwd(dir.main)
-getwd()
+#--------------make project folders and folder paths----------------------------
+
+
+wd <- getwd()  # working directory
+
+folders <- c("Code", "Data", "OutputFigures")
+# function to create folders below
+for(i in 1:length(folders)){
+  if(file.exists(folders[i]) == FALSE)
+    dir.create(folders[i])
+}
+
+
+# we also need to store the paths to these new folders
+code.output.path <- paste(wd, "/", folders[1], sep = "")
+data.output.path <- paste(wd, "/", folders[2], sep = "")
+figures.path <- paste(wd, "/", folders[3], sep = "")
+
+# our raw data is stored in different folders, lets make the paths
+forplots2020.path <- paste(wd, "/", "Data", sep = "")
+
+# now we can access and save stuff to these folders!
+
+
+
+#---------------------Below, we upload and clean the philly crime data----------
+
+
+# time to upload the datas into folder
+forplots2020 <- read.csv(paste(forplots2020.path, "/", "forplots2020.csv",
+                        sep = ""), stringsAsFactors = FALSE)
+
+
+
 #unhashtag to install packages below 
 #install.packages(c("boot", "MASS","plyr","dplyr", "ggplot2", "tibble", "car", "reshape2",
  #                  "epitools", "readxl", "tidyverse"))
@@ -331,10 +358,15 @@ write.csv(meandatetable, "mean.lice.and.forklength.by.date.2020.csv")
 
 view(meandatetable)
 #daily forklength for all species.
+#setup save location
+setwd(dir.fig)
+jpeg("DailyForkLength2020.jpeg")
+
+#begin plot, set ranges by looking at max/ min values from mean table
 yrangefl<-0:95
 xrangefl<-meandatetable$date
 par(mar = c(5,5,5,2), xpd = TRUE)
-plot(meandatetable$meanfl~meandatetable$date, cex.lab = 1, pch = 19 , cex.axis = 1.4,ylab = "Mean Forklength (mm)", xlab = "Months",  main = "Weekly Forklength of Clayoquot Salmon, 2020", ylim=c(40,95), type = "n")
+plot(meandatetable$meanfl~meandatetable$date, cex.lab = 1, pch = 19 , cex.axis = 1.4,ylab = "Mean Forklength (mm)", xlab = "Months",  main = "Daily Forklength of Clayoquot Salmon, 2020", ylim=c(40,95), type = "n")
 
 #if you want lines for all species, use code below
 #lines(meandatetable$meanfl~meandatetable$date, lwd = 2, lty = 2)
@@ -347,23 +379,26 @@ plot(meandatetable$meanfl~meandatetable$date, cex.lab = 1, pch = 19 , cex.axis =
 
 #COHO
 points(presentmeanflcoho$meanflcoho~presentmeanflcoho$date, col = "black", pch = 19)
-lines(presentmeanflcoho$meanflcoho~presentmeanflcoho$date, lwd = 2, lty = 2, col = "black")
+lines(presentmeanflcoho$meanflcoho~presentmeanflcoho$date, lwd = 2, lty = 3, col = "black")
 #abline(lm(presentmeanflcoho$meanflcoho~presentmeanflcoho$date, na.pass=TRUE, lwd = 2, lty = 1, col = "darkgray"))
 
 #CHUM
 points(presentmeanflchum$meanflchum~presentmeanflchum$date,pch = 19, col = "dodgerblue")
-lines(presentmeanflchum$meanflchum~presentmeanflchum$date, na.pass=TRUE, lwd = 2, col = "dodgerblue", lty = 2)
+lines(presentmeanflchum$meanflchum~presentmeanflchum$date, na.pass=TRUE, lwd = 2, col = "dodgerblue", lty = 3)
 
 #CHINOOK
 points(presentmeanflchinook$meanflchinook~presentmeanflchinook$date, pch = 19, col = "red")
-lines(presentmeanflchinook$meanflchinook~presentmeanflchinook$date, lwd = 2, col = "red", lty = 2)
+lines(presentmeanflchinook$meanflchinook~presentmeanflchinook$date, lwd = 2, col = "red", lty = 3)
 
 #run this before making legend because defines the species being looked at
 listspeciesinterest<-c("Chum", "Coho", "Chinook")
 
 #Legend
 legend("topright", legend = listspeciesinterest, col = c("dodgerblue", "black","red"), cex = 1, lwd = 1, title = "Species", lty = c(1,2,3))
-x
+
+#close out of save
+dev.off()
+
 #May want to put 2018 on there too in diff colour. 
 
 #One plot for each species
@@ -499,10 +534,14 @@ plotchumfl$weeklyintervals<-as.Date(plotchumfl$weeklyintervals, format = "%b %d 
 #chinNan<-as.numeric(as.character(subset(chinfl, meanflfish == "NaN")))
 #chinflmeanpresent<-chinfl[-chinNan,2]
 #chinfl[chinflmeanpresent]
-
-yrangefl<-seq(30, 130, length.out = length(weeklyintervals))
+view(best2020)
+max(best2020$length)
+#set range for axes
+yrangefl<-seq(30, 120, length.out = length(weeklyintervals))
 
 #mean weekly fl for clayoquot
+
+#begin plot base
 plot(yrangefl~weeklyintervals, cex.lab = 1.5 , cex.axis = 1.4, ylab = "Mean Forklength (mm)", type = "n", xlab = "", main = " Weekly Forklength of Clayoquot Salmon, 2020")
 
 #chum
@@ -515,13 +554,13 @@ lines(plotcohofl$meanflfish~plotcohofl$weeklyintervals, lwd = 2, lty = 3, col = 
 lines(plotchinfl$meanflfish~plotchinfl$weeklyintervals, lwd = 2, lty = 3, col = "red", na.pass = TRUE)
 
 
-legend("topleft", cex=0.8, legend = listspeciesinterest,
+legend("topright", cex=1, legend = listspeciesinterest,
        lty= c(1,3,3), col = c("black", "dodgerblue", "red"), title = "Species", lwd = 2)
 
 # save plot as WeeklyFL2019
 
-setwd(dir.outt)
-dev.copy(png,'Clayoquot.weekly.mean.fl.2020.png')
+setwd(dir.fig)
+dev.copy(jpeg,"WeeklyForkLength2020.jpg")
 dev.off()
 
 ####################
