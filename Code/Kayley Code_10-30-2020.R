@@ -57,7 +57,7 @@
 
 #--------------make project folders and folder paths----------------------------
 #set your wd here
-
+getwd()
 wd <- getwd()  # working directory
 
 folders <- c("Code", "Data", "OutputFigures")
@@ -88,6 +88,7 @@ forplots2020 <- read.csv(paste(forplots2020.path, "/", "forplots2020.csv",
                         sep = ""), stringsAsFactors = FALSE)
 
 
+View(forplots2020)
 
 #unhashtag to install packages below 
 #install.packages(c("boot", "MASS","plyr","dplyr", "ggplot2", "tibble", "car", "reshape2",
@@ -112,7 +113,7 @@ library(tidyverse)
 #bestclay <- read_xlsx("Best.Clayoquot.Sealice.data.2019.xlsx", sheet = "clayoquot.sealice.fish.data", 
                       #col_names = TRUE)
 forplots2020 <- read.csv(file = "Data/forplots2020.csv", header=T, strip.white = TRUE, na.strings = c("NA",""), stringsAsFactors = FALSE)
-view((forplots2020))
+view(forplots2020)
 
 #************************ 
 #change the year if necessary
@@ -232,12 +233,15 @@ rownames(allmeanlice) <- c("Cypre River", "North Meares", "Ritchie Bay", "Tsapee
 
 #$% issue with Total showing up....
 #making a shareable table of the lice means
-setwd(dir.fig)
 getwd()
-write.csv(meanlicetablewithtotalse, file = "meanlicetable.bysite.csv")
-write.csv(licetable, file = "totalsumslicetable.csv")
 
-setwd(dir.main)
+#save above table to csv with specified path = wd/data.output.path
+#automated version
+write.csv(meanlicetablewithtotalse,file.path(data.output.path,"meanlicetable.bysite.csv"))
+
+
+write.csv(licetable,file.path(data.output.path,"totalsumslicetable.csv"))
+
 #Interlude for ~PLOTTING~
 
 #BARPLOT OF MEAN LICE BY LOCATION
