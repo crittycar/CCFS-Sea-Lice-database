@@ -363,7 +363,7 @@ listspeciesinterest<-c("Chum", "Coho", "Chinook")
 
 #Legend
 legend("topright", legend = listspeciesinterest, col = c("dodgerblue", "black","red"), cex = 1, lwd = 1, title = "Species", lty = c(1,2,3))
-
+x
 #May want to put 2018 on there too in diff colour. 
 
 #One plot for each species
