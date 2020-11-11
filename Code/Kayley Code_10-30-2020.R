@@ -248,18 +248,19 @@ write.csv(licetable,file.path(data.output.path,"totalsumslicetable.csv"))
 #$% need to put updated plot here for mean lice 
 #**********************
 #Will have to change the vector for names.arg in the barplot if the sites names change.
+#ok not sure what is going on here but this is not working. error: Error in -0.01 * height : non-numeric argument to binary operator
 
 licesitenameedit<-c("Buckle Bay", "Cypre River", "Elbow Bank",
                     "Keltsmaht", "Lone Cone Light", "Moyeha", "Ritchie Bay", "Tranquil Est", 
                     "Tsapee Narrows","Bedwell Sound S", "Bedwell Est N", "Bedwell Middle"  )
 
-licesitenameedit <- c("Bedwell Estuary North","Cypre River","North Meares","Ritchie Bay","Tsapee Narrows")
+licesitenameedit <-c("Bedwell Estuary North","Cypre River","North Meares","Ritchie Bay","Tsapee Narrows")
 
 #check if site names match
-meanlicetablewithtotalse$groupedsites
-
-par(mar=c(10,5,4,2))
 view(meanlicetablewithtotalse)
+?barplot
+meanlicetablewithtotalse$groupedsites
+par(mar=c(10,5,4,2))
 barplot(t(meanlicetablewithtotalse), col = c("dodgerblue","red","darkgreen"), border="white", 
         font.axis=2, beside=T, legend=c(), font.lab=2, ylim = c(0,ceiling(max(meanlicetablewithtotalse))), ylab = "Mean Lice per Fish", 
         main = "Daily Mean Lice - Clayoquot Salmon, 2020", names.arg = licesitenameedit, las = 2)
@@ -363,8 +364,7 @@ notmissingchum<-!is.na(meandatetable$meanflchum)
 presentmeanflchum<-meandatetable[notmissingchum,]
 
 #table of mean forklength and mean lice numbers
-setwd(dir.fig)
-write.csv(meandatetable, "mean.lice.and.forklength.by.date.2020.csv")
+write.csv(meandatetable,file.path(data.output.path,"mean.lice.and.forklength.by.date.2020.csv"))
 
 view(meandatetable)
 #daily forklength for all species.
