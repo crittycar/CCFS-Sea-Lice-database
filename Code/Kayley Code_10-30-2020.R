@@ -248,16 +248,22 @@ write.csv(licetable,file.path(data.output.path,"totalsumslicetable.csv"))
 #$% need to put updated plot here for mean lice 
 #**********************
 #Will have to change the vector for names.arg in the barplot if the sites names change.
+
 licesitenameedit<-c("Buckle Bay", "Cypre River", "Elbow Bank",
                     "Keltsmaht", "Lone Cone Light", "Moyeha", "Ritchie Bay", "Tranquil Est", 
                     "Tsapee Narrows","Bedwell Sound S", "Bedwell Est N", "Bedwell Middle"  )
+
+licesitenameedit <- c("Bedwell Estuary North","Cypre River","North Meares","Ritchie Bay","Tsapee Narrows")
+
 #check if site names match
 meanlicetablewithtotalse$groupedsites
 
 par(mar=c(10,5,4,2))
+view(meanlicetablewithtotalse)
 barplot(t(meanlicetablewithtotalse), col = c("dodgerblue","red","darkgreen"), border="white", 
         font.axis=2, beside=T, legend=c(), font.lab=2, ylim = c(0,ceiling(max(meanlicetablewithtotalse))), ylab = "Mean Lice per Fish", 
         main = "Daily Mean Lice - Clayoquot Salmon, 2020", names.arg = licesitenameedit, las = 2)
+
 #abline(h= seq(0, ceiling(max(liceofmeanlicetable)), 1), col = "light gray")
 legend("topright", cex=0.6, legend = c("Motile", "Chalimus", "Copepodid"), col = c("dodgerblue","red","darkgreen"), title = "Lice Stage", lty = 1, lwd = 4)
 licestagelegend<-legend("topright", cex=0.6, legend = c("Total Lice", "Motile", "Chalimus", "Copepodid"), col = licecol, title = "Lice Stage", lty = 1, lwd = 4)
