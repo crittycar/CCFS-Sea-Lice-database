@@ -50,17 +50,18 @@
 #Update R
 #install.packages("installr")
 #library(installr)
+
 #updateR()
 #update r studio
 #From within RStudio, go to Help > Check for Updates to install newer version of RStudio (if available, optional).
 #************** change to your own directory
 
 #--------------make project folders and folder paths----------------------------
-#set your wd here
+#set your wd here, MAKE SURE ITS SET TO YOUR PROJECT DATA BASE IN SESSION DROPDOWN MENU ABOVE
 getwd()
 wd <- getwd()  # working directory
 
-folders <- c("Code", "Data", "OutputFigures")
+folders <- c("Code", "Data", "OutputFigures", "OutputData")
 # function to create folders below
 for(i in 1:length(folders)){
   if(file.exists(folders[i]) == FALSE)
@@ -70,8 +71,9 @@ for(i in 1:length(folders)){
 
 # we also need to store the paths to these new folders
 code.output.path <- paste(wd, "/", folders[1], sep = "")
-data.output.path <- paste(wd, "/", folders[2], sep = "")
+data.input.path <- paste(wd, "/", folders[2], sep = "")
 figures.path <- paste(wd, "/", folders[3], sep = "")
+data.output.path <- paste(wd, "/", folders[4], sep = "")
 
 # our raw data is stored in different folders, lets make the paths
 forplots2020.path <- paste(wd, "/", "Data", sep = "")
@@ -112,8 +114,6 @@ library(tidyverse)
 
 #bestclay <- read_xlsx("Best.Clayoquot.Sealice.data.2019.xlsx", sheet = "clayoquot.sealice.fish.data", 
                       #col_names = TRUE)
-forplots2020 <- read.csv(file = "Data/forplots2020.csv", header=T, strip.white = TRUE, na.strings = c("NA",""), stringsAsFactors = FALSE)
-view(forplots2020)
 
 #************************ 
 #change the year if necessary
@@ -249,16 +249,15 @@ write.csv(licetable,file.path(data.output.path,"totalsumslicetable.csv"))
 #**********************
 #Will have to change the vector for names.arg in the barplot if the sites names change.
 #ok not sure what is going on here but this is not working. error: Error in -0.01 * height : non-numeric argument to binary operator
-
+#OLD 2019
 licesitenameedit<-c("Buckle Bay", "Cypre River", "Elbow Bank",
                     "Keltsmaht", "Lone Cone Light", "Moyeha", "Ritchie Bay", "Tranquil Est", 
                     "Tsapee Narrows","Bedwell Sound S", "Bedwell Est N", "Bedwell Middle"  )
 
-licesitenameedit <-c("Bedwell Estuary North","Cypre River","North Meares","Ritchie Bay","Tsapee Narrows")
+#2020 Update, change name in names.arg
+licesitenameedit2 <-c("Bedwell Estuary North","Cypre River","North Meares","Ritchie Bay","Tsapee Narrows")
 
 #check if site names match
-view(meanlicetablewithtotalse)
-?barplot
 meanlicetablewithtotalse$groupedsites
 par(mar=c(10,5,4,2))
 barplot(t(meanlicetablewithtotalse), col = c("dodgerblue","red","darkgreen"), border="white", 
@@ -364,13 +363,11 @@ notmissingchum<-!is.na(meandatetable$meanflchum)
 presentmeanflchum<-meandatetable[notmissingchum,]
 
 #table of mean forklength and mean lice numbers
+
 write.csv(meandatetable,file.path(data.output.path,"mean.lice.and.forklength.by.date.2020.csv"))
 
 view(meandatetable)
 #daily forklength for all species.
-#setup save location
-setwd(dir.fig)
-jpeg("DailyForkLength2020.jpeg")
 
 #begin plot, set ranges by looking at max/ min values from mean table
 yrangefl<-0:95
