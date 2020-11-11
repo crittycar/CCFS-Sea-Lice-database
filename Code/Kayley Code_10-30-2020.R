@@ -70,6 +70,7 @@ for(i in 1:length(folders)){
 
 
 # we also need to store the paths to these new folders
+
 code.output.path <- paste(wd, "/", folders[1], sep = "")
 data.input.path <- paste(wd, "/", folders[2], sep = "")
 figures.path <- paste(wd, "/", folders[3], sep = "")
@@ -368,6 +369,9 @@ write.csv(meandatetable,file.path(data.output.path,"mean.lice.and.forklength.by.
 
 view(meandatetable)
 #daily forklength for all species.
+#begin with setting the path for the figure to be saved to: figures.path
+jpeg(filename = "OutputFigures/DailyForkLength.jpg")
+#note, if you are trying to adjust asthetics, you will have take off the above save code to see the plots. When jpeg is open, you won't see you plot untill you use dev.off to save it to the specified location.
 
 #begin plot, set ranges by looking at max/ min values from mean table
 yrangefl<-0:95
@@ -403,7 +407,7 @@ listspeciesinterest<-c("Chum", "Coho", "Chinook")
 #Legend
 legend("topright", legend = listspeciesinterest, col = c("dodgerblue", "black","red"), cex = 1, lwd = 1, title = "Species", lty = c(1,2,3))
 
-#close out of save
+#save current plot pane as jpeg, trying to automate this but it may require ggplot, so we'll hold off for now. use def.off at the end of all plots to save to figures path
 dev.off()
 
 #May want to put 2018 on there too in diff colour. 
