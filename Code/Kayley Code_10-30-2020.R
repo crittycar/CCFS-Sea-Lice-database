@@ -163,7 +163,6 @@ focus2020<-data.frame(subset(best2020, groupedsites == "Cypre River" | groupedsi
 
 ## END OF SET UP ##
 
-
 ## CALCULATING USEFUL VALUES FOR PREVALENCE AND MEAN LICE PLOTS ##
 
 #creating the lice sums for motile and attached
@@ -370,7 +369,7 @@ write.csv(meandatetable,file.path(data.output.path,"mean.lice.and.forklength.by.
 view(meandatetable)
 #daily forklength for all species.
 #begin with setting the path for the figure to be saved to: figures.path
-jpeg(filename = "OutputFigures/DailyForkLength.jpg")
+jpeg(filename = "OutputFigures/DailyForkLength2020.jpg")
 #note, if you are trying to adjust asthetics, you will have take off the above save code to see the plots. When jpeg is open, you won't see you plot untill you use dev.off to save it to the specified location.
 
 #begin plot, set ranges by looking at max/ min values from mean table
@@ -413,20 +412,29 @@ dev.off()
 #May want to put 2018 on there too in diff colour. 
 
 #One plot for each species
+jpeg(filename = "OutputFigures/DailyForkLengthChum.jpg")
+
 plot(presentmeanflchum$meanflchum~presentmeanflchum$date, ylab = "Mean Forklength (mm)", xlab = "", main = "Chum Mean Forklength, 2020", cex.lab = 1.5 , cex.axis = 1.4)
 lines(presentmeanflchum$meanflchum~presentmeanflchum$date, na.pass=TRUE, lwd = 2, col = "dodgerblue", type = "p", pch = 1)
 abline(lm(presentmeanflchum$meanflchum~presentmeanflchum$date, na.pass=TRUE, lwd = 2), col = "dodgerblue")
+dev.off()
 
+jpeg(filename = "OutputFigures/DailyForkLengthCoho.jpg")
 plot(presentmeanflcoho$meanflcoho~presentmeanflcoho$date, ylab = "Mean Forklength (mm)", xlab = "", main = "Coho Mean Forklength, 2020", cex.lab = 1.5 , cex.axis = 1.4)
 lines(presentmeanflcoho$meanflcoho~presentmeanflcoho$date, na.pass=TRUE, lwd = 2, lty = 1, col = "darkgray", type = "p", pch = 2)
 abline(lm(presentmeanflcoho$meanflcoho~presentmeanflcoho$date, na.pass=TRUE, lwd = 2), col = "lightgray")
+dev.off()
+
+jpeg(filename = "OutputFigures/DailyForkLengthChinook.jpg")
+
+
 
 plot(presentmeanflchinook$meanflchinook~presentmeanflchinook$date, ylab = "Mean Forklength (mm)", xlab = "", main = "Chinook Mean Forklength, 2020", cex.lab = 1.5 , cex.axis = 1.4, type = "n")
 lines(presentmeanflchinook$meanflchinook~presentmeanflchinook$date, na.pass=TRUE, lwd = 2, col = "red", na.rm = TRUE, lty = 2, type = "p", pch =3)
 abline(lm(presentmeanflchinook$meanflchinook~presentmeanflchinook$date, na.pass=TRUE, lwd = 2), col = "red")
 
 legend("topleft", legend = listspeciesinterest, col = c("dodgerblue", "lightgray","red"), cex = 0.7, lwd = 1, title = "Species", lty = c(1,1,1), pch = c(1, 2, 3))
-
+dev.off()
 
 ## MAKING WEEKLY INTERVAL DATA FOR FORKLENGTHS########
 #%$ 
@@ -553,6 +561,9 @@ yrangefl<-seq(30, 120, length.out = length(weeklyintervals))
 #mean weekly fl for clayoquot
 
 #begin plot base
+#save area
+jpeg(filename = "OutputFigures/WeeklyForkLength2020.jpg")
+
 plot(yrangefl~weeklyintervals, cex.lab = 1.5 , cex.axis = 1.4, ylab = "Mean Forklength (mm)", type = "n", xlab = "", main = " Weekly Forklength of Clayoquot Salmon, 2020")
 
 #chum
@@ -568,10 +579,8 @@ lines(plotchinfl$meanflfish~plotchinfl$weeklyintervals, lwd = 2, lty = 3, col = 
 legend("topright", cex=1, legend = listspeciesinterest,
        lty= c(1,3,3), col = c("black", "dodgerblue", "red"), title = "Species", lwd = 2)
 
-# save plot as WeeklyFL2019
+# save plot as WeeklyForklength2020
 
-setwd(dir.fig)
-dev.copy(jpeg,"WeeklyForkLength2020.jpg")
 dev.off()
 
 ####################
@@ -590,7 +599,7 @@ leplice<-best2020[,c("Lep_gravid", "Lep_nongravid", "Lep_male", "Lep_PAfemale", 
 best2020$countcol<-rep(1, length(best2020$fish_id))
 abstotalfish<-sum(best2020$countcol)
 
-#There is likely a discrepancy between councol sum and the max 
+#There is likely a discrepancy between countcol sum and the max 
 #for fish id, because fish id includes herring which was subsetted out of best2020. 
 
 best2020$motsum<-rowSums(motlice, na.rm = TRUE)
@@ -617,6 +626,7 @@ Callicetab<-aggregate(calmotsum~groupedsites, data = best2020, sum)
 
 # This is the final bar chart table! :)))
 licetable<-data.frame(Motlicetab, Attlicetab[2], Coplicetab[2], Challicetab[2], Leplicetab[2], Callicetab[2])
+view(licetable)
 #barplot for total mean lice per location group
 
 # want motsum and attached and sum_all_lice, number of fish infected and number of total fish by date.
@@ -646,8 +656,10 @@ names(bestmeandatetable)[1]<-paste("date")
 #copy and paste the line of code at the bottom of this segment. Then replace the name of the groupedsites with the new sample site.
 #Syntax must match that of the data sheet uploaded
 ###This will give you number of fish at each groupedsites.
+print(listofsites)
 
 licetablesums<-licetable
+view(licetablesums)
 #this was done so that the code didn't recount the sum columns
 licetablesums$totalsum<-rowSums(licetable[-1], na.rm = TRUE)
 totalfishwithlice<-length(which(best2020$sum_all_lice >0))
@@ -699,8 +711,8 @@ datetable$prevalence<-datetable$dinfected.fish/datetable$dtotal.fish
 siteprevalence<-data.frame(licetable[1], total.fish, infected.fish)
 siteprevalence$prevalence<-siteprevalence$infected.fish/siteprevalence$total.fish
 
-setwd(dir.outt)
-write.csv(siteprevalence, "Clayoquot.site.prevalence.2020.csv")
+
+write.csv(siteprevalence, "OutputData/Clayoquot.site.prevalence.2020.csv")
 
 
 totals<-data.frame(mean.cop = numeric(0), mean.chal = numeric(0), mean.mot = numeric(0), 
@@ -715,10 +727,9 @@ totals[1,1:11]<-c(mean(best2020$copsum), mean(best2020$chalsum), mean(best2020$m
                           mean(datetable$prevalence), sd(datetable$prevalence), 
                           sd(datetable$prevalence)/sqrt(length(datetable$date)))
 
-setwd(dir.outt)
-write.csv(totals, "totalabundances.prevalence.csv")
+write.csv(totals, "OutputData/totalabundances.prevalence.csv")
 
-#optional subsets for site groupings. 
+####optional subsets for site groupings################
 #prev.bedwell2019<-data.frame(subset(siteprevalence, groupedsites == "Bedwell Estuary North" | groupedsites == "Bedwell Estuary Middle" | groupedsites == "Bedwell Estuary South"))
 #prev.Macks2019<- data.frame(subset(siteprevalence, groupedsites == "Cypre River" | groupedsites == "Ritchie Bay" | groupedsites == "Buckle Bay"))
 #prev.Misc2019<- data.frame(subset(siteprevalence, groupedsites == "Tranquil estuary"| groupedsites == "Keltsmaht"| groupedsites == "Moyeha"| groupedsites == "Elbow Bank" | groupedsites == "TRM"|groupedsites == "Tsapee Narrows"))
@@ -736,18 +747,21 @@ write.csv(totals, "totalabundances.prevalence.csv")
 #This is for the ggplot which is pretty meh. We didn't use it, but it could be used.
 motile_lice<-licetable$motsum
 attached_lice<-licetable$attachedsum
+view(motile_lice)
 Lice_Sum<-c(rbind(motile_lice, attached_lice))
-
 ##****************************
+
 #Need to add any new sites here in "_", like Tsapee Narrows and TRM
 Sample_Site<- c(rep(c("Bedwell Estuary North", "Bedwell Estuary Middle", "Bedwell Estuary South", "Buckle Bay", "Cypre River", "Elbow Bank", "Keltsmaht", "Moyeha", "Ritchie Bay", 
                       "Tranquil Estuary", "TRM", "Tsapee Narrows"), each = 2))
+
+Sample_Site<- c(rep(c("Bedwell Estuary North", "Cypre River", "North Meares","Ritchie Bay", "Tsapee Narrows"), each = 2))
+
 #need to put in the total number of sample sites here
 ns<-(length(Sample_Site)/2)
 Lice_Stages<- c(rep(c("Motile", "Attached"), times = ns))
 Data<-data.frame(Sample_Site, Lice_Stages, Lice_Sum)
 ## END OF CALCULATIONS ##
-
 
 
 ## PLOTTING ##
@@ -763,7 +777,7 @@ plotchar<-seq(18,18+n,1)
 
 #Need this vector for the legend in the for loops.
 prevalence.stage.legend<-c("Total","Copepodid", "Chalimus", "Motile")
-groups.locations<-data.frame(groups.locations)
+groups.locations<-data.frame(Sample_Site)
 
 
 
