@@ -68,7 +68,6 @@ for(i in 1:length(folders)){
     dir.create(folders[i])
 }
 
-
 # we also need to store the paths to these new folders
 
 code.output.path <- paste(wd, "/", folders[1], sep = "")
@@ -132,6 +131,7 @@ best2020<-data.frame(best2020)
 best2020[ , 11:25][is.na(best2020[ , 11:25] ) ] <- 0 
 names(best2020)[1]<-paste("fish_id")
 best2020$sum_all_lice[is.na(best2020$sum_all_lice)]<-0
+#first mean estimate of lice abundances
 
 #setting up the new names for the locations. 
 
@@ -139,6 +139,12 @@ best2020$sum_all_lice[is.na(best2020$sum_all_lice)]<-0
 #If you have changed the name of any sites, please change them here to match
 #the line of code below is used to lump sites together by naming them the same thing. 
 #Example, Bedwell estuary 3 and 2 are now called Bedwell Estuary Middle
+#Ex 2020 had no differentiation among bedwell sites, so all are just named Bedwell  
+
+
+#from here its clear that 2020 only had 5 unique sample locations
+#below, just make sure that those 5 correspond the right new names 
+#etc: bedwell river <- bedwell estuary north
 best2020$groupedsites<-best2020$location
 levels(best2020$groupedsites)<-c(levels(best2020$groupedsites), c("Bedwell Estuary South","Bedwell Estuary North","Bedwell Estuary Middle"))
 best2020$groupedsites[best2020$groupedsites == "Bedwell estuary"]<- "Bedwell Estuary South"
@@ -148,12 +154,15 @@ best2020$groupedsites[best2020$groupedsites == "Bedwell estuary 2"]<- "Bedwell E
 best2020$groupedsites[best2020$groupedsites == "Bedwell estuary 3"]<-"Bedwell Estuary Middle"
 best2020$groupedsites[best2020$groupedsites == "Sniffles"]<- "Bedwell Estuary Middle"
 best2020$groupedsites[best2020$groupedsites == "Sniffles 2"]<- "Bedwell Estuary Middle"
+unique(best2020$location)
 
 unique(best2020$groupedsites)
 #Just some subsets that are useful for outlining groups of sites, but weren't used much for plots.
 bedwell2020<-data.frame(subset(best2020, groupedsites == "Bedwell Estuary North" | groupedsites == "Bedwell Estuary Middle" | groupedsites == "Bedwell Estuary South"))
 Misc2020<- data.frame(subset(best2020, groupedsites == "Tranquil estuary"| groupedsites == "Keltsmaht"| groupedsites == "Moyeha"| groupedsites == "Elbow Bank" | groupedsites == "TRM"|groupedsites == "Tsapee Narrows"))
-listofsites<-c("Bedwell Estuary North", "Bedwell Estuary Middle", "Bedwell Estuary South", "Cypre River", "Ritchie Bay", "Buckle Bay", "Tranquil estuary", "Keltsmaht", "Moyeha", "Elbow Bank", "TRM", "Tsapee Narrows")
+#make sure list of sites corresponds to actual list from grouped sites, I think- CC
+unique(best2020$groupedsites)
+listofsites<-c("Bedwell Estuary North","North Meares", "Cypre River", "Ritchie Bay", "Tsapee Narrows")
 Macks2020<- data.frame(subset(best2020, groupedsites == "Cypre River" | groupedsites == "Ritchie Bay"))
 Vargas2020<-data.frame(subset(best2020, groupedsites == "Elbow Bank" | groupedsites == "Buckle Bay"| groupedsites == "Keltsmaht"))
 Herbertinlet2020<- data.frame(subset(best2020, groupedsites == "Moyeha"))
@@ -172,13 +181,22 @@ focus2020<-data.frame(subset(best2020, groupedsites == "Cypre River" | groupedsi
 #may need to change the column numbers selected just below to include the written columns of the 
 #following vectors if the main template changed. May also need to change the names of the written
 #columns if the column names have changed.
+colnames(best2020)
+#not sure what this subset is for? -CC
 salmcounts<-subset(best2020[,c(11:37)])
+#motile lice sub
 motlice<-best2020[,c("Caligus_mot", "Caligus_gravid", "Lep_gravid", "Lep_nongravid", "Lep_male", "Lep_PAfemale", "Lep_PAmale", "unid_PA", "unid_adult")]
+#attached lice sub
 attlice<-best2020[,c("Lep_cope","chalA","chalB","Caligus_cope","unid_cope","chal_unid")]
+#cope lice sub
 copes<-best2020[,c("Lep_cope", "Caligus_cope", "unid_cope")]
+#chalimus lice sub
 chals<-best2020[,c("chalA", "chalB", "chal_unid")]
+#count total fish using length function
 best2020$countcol<-rep(1, length(best2020$fish_id))
+
 abstotalfish<-sum(best2020$countcol)
+
 #must use countcol for counting total fish because fish_ID is given to species that aren't included in analysis.
 #mean lice = sum of sum of lice / abstotal
 
@@ -197,6 +215,17 @@ Challicetab<-aggregate(chalsum~groupedsites, data = best2020, sum)
 alltab<-aggregate(sum_all_lice~groupedsites, data = best2020, sum)
 # This is the final table for plots of sums! :)))
 licetable<-data.frame(Motlicetab, Attlicetab[2], Coplicetab[2], Challicetab[2], alltab[2])
+view(licetable)
+#check with best2020 to see if the numbers make sense
+#it looks like the sums do not add up, making another estimate here to check
+alltabcheck<-aggregate(sum_all_lice~groupedsites, data = best2020, sum)
+install.packages(c('tibble', 'dplyr', 'readr'))
+library(tibble)
+library(dplyr)
+library(readr)
+
+depr_df <- depr_df %>% rowwise() %>%
+  mutate(DeprIndex = sum(c_across(Depr1:Depr5)))
 
 #Last line in this chunk assembles the stages-tables to give the MEAN of all lice stages by groupedsites
 mMotlicetab<-aggregate(motsum~groupedsites, data = best2020,mean)
@@ -504,7 +533,7 @@ meanflfish<-as.numeric(as.character(meanflfish))
 ######RUN THIS AFTER NEXT CHUNK OF CODE TO MAKE WORK
 weeklyfl$meanflfish<-as.numeric(as.character(weeklyfl$meanflfish))
 
-
+view(weeklyfl$meanflfish)
 
 speciesinterest<-rep(c("chum", "coho", "chinook"), each = length(weeklyintervals))
 weeklyfl<-data.frame(cbind(speciesinterest, meanflfish, sdflfish))
@@ -561,13 +590,14 @@ yrangefl<-seq(30, 120, length.out = length(weeklyintervals))
 #mean weekly fl for clayoquot
 
 #begin plot base
+
 #save area
 jpeg(filename = "OutputFigures/WeeklyForkLength2020.jpg")
 
 plot(yrangefl~weeklyintervals, cex.lab = 1.5 , cex.axis = 1.4, ylab = "Mean Forklength (mm)", type = "n", xlab = "", main = " Weekly Forklength of Clayoquot Salmon, 2020")
 
 #chum
-lines(plotchumfl$meanflfish~plotchumfl$weeklyintervals, lwd = 2, lty = 1)
+lines(plotchumfl$meanflfish~plotchumfl$weeklyintervals, lwd = 2, lty = 3)
 
 #coho
 lines(plotcohofl$meanflfish~plotcohofl$weeklyintervals, lwd = 2, lty = 3, col = "dodgerblue", na.pass = TRUE)
@@ -780,14 +810,13 @@ prevalence.stage.legend<-c("Total","Copepodid", "Chalimus", "Motile")
 groups.locations<-data.frame(Sample_Site)
 
 
-
-
 prevsiteday <- data.frame(date = numeric(0),
                           site = character(0),
                           totalprev = numeric(0),
                           motprev = numeric(0),
                           chalprev = numeric(0),
                           copeprev = numeric(0))
+
 
 prevsiteday$date <- as.Date(counts$date, levels=weeklyintervals, origin=as.Date("1970-01-01"), format = "%b %d %y")  # Make sure months are ordered correctly for future plotting
 
@@ -804,6 +833,7 @@ for (i in 1:nloop) {
   site3<-subset(best2020, groupedsites == listofsites[i]) 
   #this gives you an individual site to work with.
   #optional subset for chum. Subsetting for chinook and coho might be ok, but probably very low numbers.
+  
   #site.s3<-subset(site3, species == "chum")
   #for (j in 1:datecount) {
   
