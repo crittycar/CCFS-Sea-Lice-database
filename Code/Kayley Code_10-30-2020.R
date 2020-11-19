@@ -106,6 +106,7 @@ library(reshape2)
 library(epitools)
 library(readxl)
 library(tidyverse)
+
 #***************************
 #change the file and/or sheet name if necessary
 #if you want plots 
@@ -145,30 +146,32 @@ best2020$sum_all_lice[is.na(best2020$sum_all_lice)]<-0
 #from here its clear that 2020 only had 5 unique sample locations
 #below, just make sure that those 5 correspond the right new names 
 #etc: bedwell river <- bedwell estuary north
+#change bedwell estuary to bedwell sound in all cases
 best2020$groupedsites<-best2020$location
-levels(best2020$groupedsites)<-c(levels(best2020$groupedsites), c("Bedwell Estuary South","Bedwell Estuary North","Bedwell Estuary Middle"))
-best2020$groupedsites[best2020$groupedsites == "Bedwell estuary"]<- "Bedwell Estuary South"
-best2020$groupedsites[best2020$groupedsites == "Bedwell estuary 4"]<-"Bedwell Estuary North"
-best2020$groupedsites[best2020$groupedsites == "Bedwell River"]<- "Bedwell Estuary North"
-best2020$groupedsites[best2020$groupedsites == "Bedwell estuary 2"]<- "Bedwell Estuary Middle"
-best2020$groupedsites[best2020$groupedsites == "Bedwell estuary 3"]<-"Bedwell Estuary Middle"
-best2020$groupedsites[best2020$groupedsites == "Sniffles"]<- "Bedwell Estuary Middle"
-best2020$groupedsites[best2020$groupedsites == "Sniffles 2"]<- "Bedwell Estuary Middle"
+levels(best2020$groupedsites)<-c(levels(best2020$groupedsites), c("Bedwell Sound South","Bedwell Sound North","Bedwell Sound Middle"))
+best2020$groupedsites[best2020$groupedsites == "Bedwell estuary"]<- "Bedwell Sound South"
+best2020$groupedsites[best2020$groupedsites == "Bedwell estuary 4"]<-"Bedwell Sound North"
+best2020$groupedsites[best2020$groupedsites == "Bedwell River"]<- "Bedwell Sound North"
+best2020$groupedsites[best2020$groupedsites == "Bedwell estuary 2"]<- "Bedwell Sound Middle"
+best2020$groupedsites[best2020$groupedsites == "Bedwell estuary 3"]<-"Bedwell Sound Middle"
+best2020$groupedsites[best2020$groupedsites == "Sniffles"]<- "Bedwell Sound Middle"
+best2020$groupedsites[best2020$groupedsites == "Sniffles 2"]<- "Bedwell Sound Middle"
 unique(best2020$location)
 
 unique(best2020$groupedsites)
 #Just some subsets that are useful for outlining groups of sites, but weren't used much for plots.
-bedwell2020<-data.frame(subset(best2020, groupedsites == "Bedwell Estuary North" | groupedsites == "Bedwell Estuary Middle" | groupedsites == "Bedwell Estuary South"))
+#replace all estuary to sound
+bedwell2020<-data.frame(subset(best2020, groupedsites == "Bedwell Sound North" | groupedsites == "Bedwell Sound Middle" | groupedsites == "Bedwell Sound South"))
 Misc2020<- data.frame(subset(best2020, groupedsites == "Tranquil estuary"| groupedsites == "Keltsmaht"| groupedsites == "Moyeha"| groupedsites == "Elbow Bank" | groupedsites == "TRM"|groupedsites == "Tsapee Narrows"))
 #make sure list of sites corresponds to actual list from grouped sites, I think- CC
 unique(best2020$groupedsites)
-listofsites<-c("Bedwell Estuary North","North Meares", "Cypre River", "Ritchie Bay", "Tsapee Narrows")
+listofsites<-c("Bedwell Sound North","North Meares", "Cypre River", "Ritchie Bay", "Tsapee Narrows")
 Macks2020<- data.frame(subset(best2020, groupedsites == "Cypre River" | groupedsites == "Ritchie Bay"))
 Vargas2020<-data.frame(subset(best2020, groupedsites == "Elbow Bank" | groupedsites == "Buckle Bay"| groupedsites == "Keltsmaht"))
 Herbertinlet2020<- data.frame(subset(best2020, groupedsites == "Moyeha"))
 #Below = Tofino Inlet to Browning Passage to Duffin Passage
 Tofino2020<- data.frame(subset(best2020, groupedsites == "Tranquil estuary" | groupedsites == "TRM"|groupedsites == "Tsapee Narrows"))
-focus2020<-data.frame(subset(best2020, groupedsites == "Cypre River" | groupedsites == "Ritchie Bay"| groupedsites == "Bedwell Estuary North"))
+focus2020<-data.frame(subset(best2020, groupedsites == "Cypre River" | groupedsites == "Ritchie Bay"| groupedsites == "Bedwell Sound North"))
 
 ## END OF SET UP ##
 
@@ -214,10 +217,12 @@ Coplicetab<-aggregate(copsum~groupedsites, data = best2020, sum)
 Challicetab<-aggregate(chalsum~groupedsites, data = best2020, sum)
 alltab<-aggregate(sum_all_lice~groupedsites, data = best2020, sum)
 # This is the final table for plots of sums! :)))
-licetable<-data.frame(Motlicetab, Attlicetab[2], Coplicetab[2], Challicetab[2], alltab[2])
+licetable<-data.frame(Motlicetab, Coplicetab[2], Challicetab[2], alltab[2], Attlicetab[2])
+
+
 view(licetable)
 #check with best2020 to see if the numbers make sense
-#it looks like the sums do not add up, making another estimate here to check
+#it looks like the sums for cypre river lice do not add up to the all sum, making another estimate here to check
 alltabcheck<-aggregate(sum_all_lice~groupedsites, data = best2020, sum)
 install.packages(c('tibble', 'dplyr', 'readr'))
 library(tibble)
@@ -284,7 +289,7 @@ licesitenameedit<-c("Buckle Bay", "Cypre River", "Elbow Bank",
                     "Tsapee Narrows","Bedwell Sound S", "Bedwell Est N", "Bedwell Middle"  )
 
 #2020 Update, change name in names.arg
-licesitenameedit2 <-c("Bedwell Estuary North","Cypre River","North Meares","Ritchie Bay","Tsapee Narrows")
+licesitenameedit2 <-c("Bedwell Sound North","Cypre River","North Meares","Ritchie Bay","Tsapee Narrows")
 
 #check if site names match
 meanlicetablewithtotalse$groupedsites
@@ -782,10 +787,10 @@ Lice_Sum<-c(rbind(motile_lice, attached_lice))
 ##****************************
 
 #Need to add any new sites here in "_", like Tsapee Narrows and TRM
-Sample_Site<- c(rep(c("Bedwell Estuary North", "Bedwell Estuary Middle", "Bedwell Estuary South", "Buckle Bay", "Cypre River", "Elbow Bank", "Keltsmaht", "Moyeha", "Ritchie Bay", 
+Sample_Site<- c(rep(c("Bedwell Sound North", "Bedwell Sound Middle", "Bedwell Sound South", "Buckle Bay", "Cypre River", "Elbow Bank", "Keltsmaht", "Moyeha", "Ritchie Bay", 
                       "Tranquil Estuary", "TRM", "Tsapee Narrows"), each = 2))
 
-Sample_Site<- c(rep(c("Bedwell Estuary North", "Cypre River", "North Meares","Ritchie Bay", "Tsapee Narrows"), each = 2))
+Sample_Site<- c(rep(c("Bedwell Sound North", "Cypre River", "North Meares","Ritchie Bay", "Tsapee Narrows"), each = 2))
 
 #need to put in the total number of sample sites here
 ns<-(length(Sample_Site)/2)
@@ -1036,16 +1041,16 @@ tsal2020$date <- as.Date(with(tsal2020, paste(year, month, day, sep="-")), "%Y-%
 #***********************
 #If you have changed the name of any sites, please change them here to match
 #the line of code below is used to lump sites together by naming them the same thing. 
-#Example, Bedwell estuary 3 and 2 are now called Bedwell Estuary Middle
+#Example, Bedwell Sound 3 and 2 are now called Bedwell Sound Middle
 tsal2020$groupedsites<-tsal2020$location
-levels(tsal2020$groupedsites)<-c(levels(tsal2020$groupedsites), c("Bedwell Estuary South","Bedwell Estuary North","Bedwell Estuary Middle"))
-tsal2020$groupedsites[tsal2020$groupedsites == "Bedwell estuary"]<- "Bedwell Estuary South"
-tsal2020$groupedsites[tsal2020$groupedsites == "Bedwell estuary 4"]<-"Bedwell Estuary North"
-tsal2020$groupedsites[tsal2020$groupedsites == "Bedwell River"]<- "Bedwell Estuary North"
-tsal2020$groupedsites[tsal2020$groupedsites == "Bedwell estuary 2"]<- "Bedwell Estuary Middle"
-tsal2020$groupedsites[tsal2020$groupedsites == "Bedwell estuary 3"]<-"Bedwell Estuary Middle"
-tsal2020$groupedsites[tsal2020$groupedsites == "Sniffles"]<- "Bedwell Estuary Middle"
-tsal2020$groupedsites[tsal2020$groupedsites == "Sniffles 2"]<- "Bedwell Estuary Middle"
+levels(tsal2020$groupedsites)<-c(levels(tsal2020$groupedsites), c("Bedwell Sound South","Bedwell Sound North","Bedwell Sound Middle"))
+tsal2020$groupedsites[tsal2020$groupedsites == "Bedwell Sound"]<- "Bedwell Sound South"
+tsal2020$groupedsites[tsal2020$groupedsites == "Bedwell Sound 4"]<-"Bedwell Sound North"
+tsal2020$groupedsites[tsal2020$groupedsites == "Bedwell River"]<- "Bedwell Sound North"
+tsal2020$groupedsites[tsal2020$groupedsites == "Bedwell Sound 2"]<- "Bedwell Sound Middle"
+tsal2020$groupedsites[tsal2020$groupedsites == "Bedwell Sound 3"]<-"Bedwell Sound Middle"
+tsal2020$groupedsites[tsal2020$groupedsites == "Sniffles"]<- "Bedwell Sound Middle"
+tsal2020$groupedsites[tsal2020$groupedsites == "Sniffles 2"]<- "Bedwell Sound Middle"
 
 loctsal<-unique(tsal2020$groupedsites)
 ritchieplottsal<-data.frame(meansurfsalt = numeric(0),
@@ -1312,7 +1317,7 @@ par(mar = c(3, 5,5,2))
 par(mfrow=c(1,1))
 
 #remove bedwell as not enough data for analysis
-nobedwell <- filter(best2020, groupedsites != "Bedwell Estuary North")
+nobedwell <- filter(best2020, groupedsites != "Bedwell Sound North")
 site3<- nobedwell
 #this gives you an individual site to work with.
 
@@ -1690,7 +1695,7 @@ names(weeksitelice)<-paste(c("date", "j.date", "weeklyintvl", "groupedsites", "c
 #%%%%
 #*********************
 #to add a site to the focussitelist, add | groupedsites == "desired site" to the code below for vector focusweeksitelice
-focusweeksitelice<-subset(weeksitelice, groupedsites == "Cypre River" | groupedsites == "Ritchie Bay" | groupedsites == "North Meares" | groupedsites == "Bedwell Estuary North")
+focusweeksitelice<-subset(weeksitelice, groupedsites == "Cypre River" | groupedsites == "Ritchie Bay" | groupedsites == "North Meares" | groupedsites == "Bedwell Sound North")
 focussitelist<- unique(focusweeksitelice$groupedsites)
 
 rowcounts <- data.frame(weeklyintvl = numeric(0),
@@ -2058,7 +2063,7 @@ axis(side = 2, at = seq(from=0, to=10, by=2), las = 1)
 
 
 setwd(dir.outt)
-dev.copy(png,'Bedwell Estuary Mean Lice Abundance per Fish.png')
+dev.copy(png,'Bedwell Sound Mean Lice Abundance per Fish.png')
 dev.off()
 
 
@@ -2109,7 +2114,7 @@ weektablefuci[is.na(weektablefuci)]<-0
 #bpintvls1<-as.Date(bpintvls, origin = as.Date("1970-01-01"), format = "%b %d %y")
 par(mar=c(10,5,4,2))
 mp <- barplot(t(weektablef1), ann=F, yaxt="n", ylim=c(0,8), 
-              main = "Bedwell Estuary Mean Lice Abundance per Fish", col=c("darkgreen","dodgerblue","red","darkgray"), 
+              main = "Bedwell Sound Mean Lice Abundance per Fish", col=c("darkgreen","dodgerblue","red","darkgray"), 
               beside = T, names.arg = bpintvls, axes = TRUE)
 segments( x0 = mp, t(weektableflci), x1 = mp, t(weektablefuci), lwd = 2)  # confidence intervals
 arrows(x0 = mp, t(weektableflci), x1 = mp, t(weektablefuci), lwd = 1, angle = 90,
