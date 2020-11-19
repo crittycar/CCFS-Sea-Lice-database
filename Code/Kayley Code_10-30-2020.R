@@ -106,6 +106,7 @@ library(reshape2)
 library(epitools)
 library(readxl)
 library(tidyverse)
+library(readr)
 
 #***************************
 #change the file and/or sheet name if necessary
@@ -215,22 +216,16 @@ Motlicetab<-aggregate(motsum~groupedsites, data = best2020, sum)
 Attlicetab<-aggregate(attachedsum~groupedsites, data = best2020, sum)
 Coplicetab<-aggregate(copsum~groupedsites, data = best2020, sum)
 Challicetab<-aggregate(chalsum~groupedsites, data = best2020, sum)
-alltab<-aggregate(sum_all_lice~groupedsites, data = best2020, sum)
-# This is the final table for plots of sums! :)))
-licetable<-data.frame(Motlicetab, Coplicetab[2], Challicetab[2], alltab[2], Attlicetab[2])
 
+licetable<-data.frame(Motlicetab, Coplicetab[2], Challicetab[2], Attlicetab[2])
+
+#now adding rows together to get a sum for all lice
+#here the new column you are creating is "sum_all_lice", your frame is the previous licetable, and you are using the sum across function to sum across the mot, chal, and cope sums
+licetable <- licetable %>% rowwise() %>%
+  mutate(Sum_all_lice= sum(c_across(motsum:chalsum)))
 
 view(licetable)
-#check with best2020 to see if the numbers make sense
-#it looks like the sums for cypre river lice do not add up to the all sum, making another estimate here to check
-alltabcheck<-aggregate(sum_all_lice~groupedsites, data = best2020, sum)
-install.packages(c('tibble', 'dplyr', 'readr'))
-library(tibble)
-library(dplyr)
-library(readr)
-
-depr_df <- depr_df %>% rowwise() %>%
-  mutate(DeprIndex = sum(c_across(Depr1:Depr5)))
+#make sure to check that sums make sense
 
 #Last line in this chunk assembles the stages-tables to give the MEAN of all lice stages by groupedsites
 mMotlicetab<-aggregate(motsum~groupedsites, data = best2020,mean)
@@ -255,7 +250,7 @@ names(secols)<-paste(c("SE.motile", "SE.attached", "SE.cops", "SE.chals", "SE.al
 #line of code below shows error " Error in data.frame(..., check.names = FALSE) : 
     #arguments imply differing number of rows: 5, 0
 meanlicetablewithtotalse<-(cbind(meanlicetable, secols))
-
+view(meanlicetablewithtotalse)
 # This is the final table for plots of means! :)))
 #liceofmeanlicetable<-data.frame(cbind(meanlicetable$motsum, meanlicetable$chalsum, meanlicetable$copsum))
 allmeanlice <- data.frame(cbind(meanlicetable$motsum, meanlicetable$chalsum, meanlicetable$copsum, deparse.level = 1))
