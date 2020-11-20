@@ -145,7 +145,6 @@ match("sum_all_lice", names(best2020))
 
 
 best2020 <- dplyr::select(best2020,-39)
-view(best2020$)
 
 best2020 <- best2020 %>% rowwise() %>%
   dplyr::mutate(Sum_all_lice = sum(c_across(Lep_cope:unid_adult)))
