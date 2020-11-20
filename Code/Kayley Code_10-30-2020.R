@@ -58,6 +58,9 @@
 
 #--------------make project folders and folder paths----------------------------
 #set your wd here, MAKE SURE ITS SET TO YOUR PROJECT DATA BASE IN SESSION DROPDOWN MENU ABOVE
+# !diagnostics off
+
+
 getwd()
 wd <- getwd()  # working directory
 
