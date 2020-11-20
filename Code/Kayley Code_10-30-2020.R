@@ -62,6 +62,7 @@ getwd()
 wd <- getwd()  # working directory
 
 folders <- c("Code", "Data", "OutputFigures", "OutputData")
+
 # function to create folders below
 for(i in 1:length(folders)){
   if(file.exists(folders[i]) == FALSE)
@@ -94,7 +95,7 @@ View(forplots2020)
 
 #unhashtag to install packages below 
 #install.packages(c("boot", "MASS","plyr","dplyr", "ggplot2", "tibble", "car", "reshape2",
- #                  "epitools", "readxl", "tidyverse"))
+ #                  "epitools", "readxl", "tidyverse","arsenal")))
 library(boot)
 library(MASS)
 library(plyr)
@@ -107,6 +108,9 @@ library(epitools)
 library(readxl)
 library(tidyverse)
 library(readr)
+library(arsenal)
+
+warnings()
 
 #***************************
 #change the file and/or sheet name if necessary
@@ -133,7 +137,27 @@ best2020<-data.frame(best2020)
 best2020[ , 11:25][is.na(best2020[ , 11:25] ) ] <- 0 
 names(best2020)[1]<-paste("fish_id")
 best2020$sum_all_lice[is.na(best2020$sum_all_lice)]<-0
-#first mean estimate of lice abundances
+view(best2020)
+#for some reason the sum_all_lice column is not calculating adding all the lice counts properly
+#to fix this we need to replace the column entirely by summing across all the rows
+#library(dplyr)
+#match("sum_all_lice", names(best2020))
+#require(dplyr)
+
+#best2020 <- dplyr::select(best2020,-39)
+#view(best2020)
+
+
+#best2020 <- best2020 %>% rowwise() %>%
+ # dplyr::mutate(Sum_all_lice = sum(c_across(Lep_cope:unid_adult)))
+
+#view(best2020)
+#now lets us aresenal to compare the two sum coloumns 
+#sum <- data.frame(best2020$sum_all_lice)
+#Sum <- data.frame(best2020$Sum_all_lice)
+#summary(comparedf(sum,Sum))
+
+    #first mean estimate of lice abundances
 
 #setting up the new names for the locations. 
 
@@ -172,7 +196,9 @@ Vargas2020<-data.frame(subset(best2020, groupedsites == "Elbow Bank" | groupedsi
 Herbertinlet2020<- data.frame(subset(best2020, groupedsites == "Moyeha"))
 #Below = Tofino Inlet to Browning Passage to Duffin Passage
 Tofino2020<- data.frame(subset(best2020, groupedsites == "Tranquil estuary" | groupedsites == "TRM"|groupedsites == "Tsapee Narrows"))
-focus2020<-data.frame(subset(best2020, groupedsites == "Cypre River" | groupedsites == "Ritchie Bay"| groupedsites == "Bedwell Sound North"))
+focus2020<-data.frame(subset(best2020, groupedsites == "North Meares" |groupedsites == "Cypre River" | groupedsites == "Ritchie Bay")
+#view(focus2020)
+#summary(comparedf(focus2020,best2020))
 
 ## END OF SET UP ##
 
@@ -190,16 +216,19 @@ colnames(best2020)
 salmcounts<-subset(best2020[,c(11:37)])
 #motile lice sub
 motlice<-best2020[,c("Caligus_mot", "Caligus_gravid", "Lep_gravid", "Lep_nongravid", "Lep_male", "Lep_PAfemale", "Lep_PAmale", "unid_PA", "unid_adult")]
-#attached lice sub
-attlice<-best2020[,c("Lep_cope","chalA","chalB","Caligus_cope","unid_cope","chal_unid")]
 #cope lice sub
 copes<-best2020[,c("Lep_cope", "Caligus_cope", "unid_cope")]
 #chalimus lice sub
 chals<-best2020[,c("chalA", "chalB", "chal_unid")]
+#attached lice sub
+attlice<-best2020[,c("Lep_cope","chalA","chalB","Caligus_cope","unid_cope","chal_unid")]
+
+
 #count total fish using length function
 best2020$countcol<-rep(1, length(best2020$fish_id))
 
 abstotalfish<-sum(best2020$countcol)
+
 
 #must use countcol for counting total fish because fish_ID is given to species that aren't included in analysis.
 #mean lice = sum of sum of lice / abstotal
@@ -212,19 +241,25 @@ best2020$chalsum<-rowSums(chals, na.rm = TRUE)
 
 
 #Last line in this chunk assembles the stages-tables to give the SUM of all lice stages by groupedsites
+
 Motlicetab<-aggregate(motsum~groupedsites, data = best2020, sum)
 Attlicetab<-aggregate(attachedsum~groupedsites, data = best2020, sum)
 Coplicetab<-aggregate(copsum~groupedsites, data = best2020, sum)
 Challicetab<-aggregate(chalsum~groupedsites, data = best2020, sum)
+alltab<-aggregate(sum_all_lice~groupedsites, data = best2020, sum)
+# This is the final table for plots of sums! :)))
+licetable<-data.frame(Motlicetab, Coplicetab[2], Challicetab[2], alltab[2], Attlicetab[2])
+view(licetable)
+
 
 licetable<-data.frame(Motlicetab, Coplicetab[2], Challicetab[2], Attlicetab[2])
 
 #now adding rows together to get a sum for all lice
 #here the new column you are creating is "sum_all_lice", your frame is the previous licetable, and you are using the sum across function to sum across the mot, chal, and cope sums
 licetable <- licetable %>% rowwise() %>%
-  mutate(Sum_all_lice= sum(c_across(motsum:chalsum)))
-
+  dplyr::mutate(Sum_all_lice= sum(c_across(motsum:chalsum)))
 view(licetable)
+
 #make sure to check that sums make sense
 
 #Last line in this chunk assembles the stages-tables to give the MEAN of all lice stages by groupedsites
@@ -232,7 +267,6 @@ mMotlicetab<-aggregate(motsum~groupedsites, data = best2020,mean)
 mAttlicetab<-aggregate(attachedsum~groupedsites, data = best2020, mean)
 mCoplicetab<-aggregate(copsum~groupedsites, data = best2020, mean)
 mChallicetab<-aggregate(chalsum~groupedsites, data = best2020, mean)
-malltab<-aggregate(sum_all_lice~groupedsites, data = best2020, mean)
 meanlicetable<-data.frame(mMotlicetab, mAttlicetab[2], mCoplicetab[2], mChallicetab[2], malltab[2])
 meanlicetable<-meanlicetable[order(meanlicetable$groupedsites),]
 secols<-data.frame(motsum = numeric(0), attsum = numeric(0), copesum = numeric(0), chalsum = numeric(0), allsum = numeric(0))
@@ -257,8 +291,10 @@ allmeanlice <- data.frame(cbind(meanlicetable$motsum, meanlicetable$chalsum, mea
               #names(allmeanlice[names(allmeanlice)== "X1"]) <- "motsum"
               #names(allmeanlice[names(allmeanlice)== "X2"]) <- "chalsum"
               #names(allmeanlice[names(allmeanlice)== "X3"]) <- "copsum"
+#check order of names from grouped sites in best 2020, copy that orientation below
+unique(best2020$groupedsites)
 colnames(allmeanlice)<- c("motsum", "chalsum", "copsum")
-rownames(allmeanlice) <- c("Cypre River", "North Meares", "Ritchie Bay", "Tsapee Narrows", "Bedwell Narrows North")
+rownames(allmeanlice) <- c("Bedwell Sound North", "North Meares","Cypre River", "Ritchie Bay", "Tsapee Narrows")
 
 #$% issue with Total showing up....
 #making a shareable table of the lice means
