@@ -143,10 +143,6 @@ best2020$sum_all_lice[is.na(best2020$sum_all_lice)]<-0
 #for some reason the sum_all_lice column is not calculating adding all the lice counts properly
 #to fix this we need to replace the column entirely by summing across all the rows
 #library(dplyr)
-match("sum_all_lice", names(best2020))
-
-
-best2020 <- dplyr::select(best2020,-39)
 
 best2020 <- best2020 %>% rowwise() %>%
   dplyr::mutate(Sum_all_lice = sum(c_across(Lep_cope:unid_adult)))
