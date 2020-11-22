@@ -58,7 +58,6 @@
 
 #--------------make project folders and folder paths----------------------------
 #set your wd here, MAKE SURE ITS SET TO YOUR PROJECT DATA BASE IN SESSION DROPDOWN MENU ABOVE
-# !diagnostics off
 
 
 getwd()
@@ -253,7 +252,7 @@ Motlicetab<-aggregate(motsum~groupedsites, data = best2020, sum)
 Attlicetab<-aggregate(attachedsum~groupedsites, data = best2020, sum)
 Coplicetab<-aggregate(copsum~groupedsites, data = best2020, sum)
 Challicetab<-aggregate(chalsum~groupedsites, data = best2020, sum)
-alltab<-aggregate(sum_all_lice~groupedsites, data = best2020, sum)
+alltab<-aggregate(Sum_all_lice~groupedsites, data = best2020, sum)
 # This is the final table for plots of sums! :)))
 licetable<-data.frame(Motlicetab, Coplicetab[2], Challicetab[2], alltab[2], Attlicetab[2])
 
@@ -273,6 +272,7 @@ mMotlicetab<-aggregate(motsum~groupedsites, data = best2020,mean)
 mAttlicetab<-aggregate(attachedsum~groupedsites, data = best2020, mean)
 mCoplicetab<-aggregate(copsum~groupedsites, data = best2020, mean)
 mChallicetab<-aggregate(chalsum~groupedsites, data = best2020, mean)
+malltab<-aggregate(Sum_all_lice~groupedsites, data = best2020, mean)
 meanlicetable<-data.frame(mMotlicetab, mAttlicetab[2], mCoplicetab[2], mChallicetab[2], malltab[2])
 meanlicetable<-meanlicetable[order(meanlicetable$groupedsites),]
 secols<-data.frame(motsum = numeric(0), attsum = numeric(0), copesum = numeric(0), chalsum = numeric(0), allsum = numeric(0))
@@ -283,7 +283,7 @@ for (i in 1:length(meanlicetable$groupedsites)) {
   secols[i,2]<-sd(semeans.site.temp$attachedsum)/sqrt(length(semeans.site.temp$motsum))
   secols[i,3]<-sd(semeans.site.temp$copsum)/sqrt(length(semeans.site.temp$motsum))
   secols[i,4]<-sd(semeans.site.temp$chalsum)/sqrt(length(semeans.site.temp$motsum))
-  secols[i,5]<-sd(semeans.site.temp$sum_all_lice)/sqrt(length(semeans.site.temp$motsum))
+  secols[i,5]<-sd(semeans.site.temp$Sum_all_lice)/sqrt(length(semeans.site.temp$motsum))
 }
 
 names(secols)<-paste(c("SE.motile", "SE.attached", "SE.cops", "SE.chals", "SE.all"))
@@ -321,23 +321,32 @@ write.csv(licetable,file.path(data.output.path,"totalsumslicetable.csv"))
 #Will have to change the vector for names.arg in the barplot if the sites names change.
 #ok not sure what is going on here but this is not working. error: Error in -0.01 * height : non-numeric argument to binary operator
 #OLD 2019
-licesitenameedit<-c("Buckle Bay", "Cypre River", "Elbow Bank",
+#licesitenameedit<-c("Buckle Bay", "Cypre River", "Elbow Bank",
                     "Keltsmaht", "Lone Cone Light", "Moyeha", "Ritchie Bay", "Tranquil Est", 
                     "Tsapee Narrows","Bedwell Sound S", "Bedwell Est N", "Bedwell Middle"  )
 
 #2020 Update, change name in names.arg
-licesitenameedit2 <-c("Bedwell Sound North","Cypre River","North Meares","Ritchie Bay","Tsapee Narrows")
+licesitenameedit <-c("Bedwell Sound North","North Meares", "Cypre River","Ritchie Bay","Tsapee Narrows")
 
 #check if site names match
 meanlicetablewithtotalse$groupedsites
+meanlicetablewithtotalse <- na.omit(meanlicetablewithtotalse)
+view(meanlicetablewithtotalse)
+#plot area 
+
 par(mar=c(10,5,4,2))
-barplot(t(meanlicetablewithtotalse), col = c("dodgerblue","red","darkgreen"), border="white", 
+barplot(t(meanlicetablewithtotalse, col = c("dodgerblue","red","darkgreen"), border="white", 
         font.axis=2, beside=T, legend=c(), font.lab=2, ylim = c(0,ceiling(max(meanlicetablewithtotalse))), ylab = "Mean Lice per Fish", 
         main = "Daily Mean Lice - Clayoquot Salmon, 2020", names.arg = licesitenameedit, las = 2)
 
 #abline(h= seq(0, ceiling(max(liceofmeanlicetable)), 1), col = "light gray")
+
+licecol<-c("darkgray","dodgerblue","red","darkgreen")
+legend("topright", cex=0.6, legend = c("Total Lice", "Motile", "Chalimus", "Copepodid"), col = licecol, title = "Lice Stage", lty = 1, lwd = 4)
+
 legend("topright", cex=0.6, legend = c("Motile", "Chalimus", "Copepodid"), col = c("dodgerblue","red","darkgreen"), title = "Lice Stage", lty = 1, lwd = 4)
 licestagelegend<-legend("topright", cex=0.6, legend = c("Total Lice", "Motile", "Chalimus", "Copepodid"), col = licecol, title = "Lice Stage", lty = 1, lwd = 4)
+
 
 # Resuming ~VECTOR CREATION~
 
@@ -366,7 +375,7 @@ best2020$j.date<-julian(best2020$date)
 #now aggregate a table with required info
 datemot<-aggregate(motsum~date, data = best2020, sum)
 dateatt<-aggregate(attachedsum~date, data = best2020, sum)
-datetot<-aggregate(sum_all_lice~date, data = best2020, sum)
+datetot<-aggregate(Sum_all_lice~date, data = best2020, sum)
 datecop<-aggregate(copsum~date, data = best2020, sum)
 datechal<-aggregate(chalsum~date, data = best2020, sum)
 datetable<-data.frame(datetot, datemot[2], dateatt[2], datecop[2], datechal[2])
@@ -701,13 +710,13 @@ licetable<-data.frame(Motlicetab, Attlicetab[2], Coplicetab[2], Challicetab[2], 
 view(licetable)
 #barplot for total mean lice per location group
 
-# want motsum and attached and sum_all_lice, number of fish infected and number of total fish by date.
+# want motsum and attached and Sum_all_lice, number of fish infected and number of total fish by date.
 #can get motsum and attached and sum all lice by date
 
 #now aggregate a table with required info
 datemot<-aggregate(motsum~date, data = best2020, sum)
 dateatt<-aggregate(attachedsum~date, data = best2020, sum)
-datetot<-aggregate(sum_all_lice~date, data = best2020, sum)
+datetot<-aggregate(Sum_all_lice~date, data = best2020, sum)
 datecop<-aggregate(copsum~date, data = best2020, sum)
 datechal<-aggregate(chalsum~date, data = best2020, sum)
 datecalmot<-aggregate(calmotsum~date, data = best2020, sum)
@@ -728,13 +737,11 @@ names(bestmeandatetable)[1]<-paste("date")
 #copy and paste the line of code at the bottom of this segment. Then replace the name of the groupedsites with the new sample site.
 #Syntax must match that of the data sheet uploaded
 ###This will give you number of fish at each groupedsites.
-print(listofsites)
 
 licetablesums<-licetable
-view(licetablesums)
 #this was done so that the code didn't recount the sum columns
 licetablesums$totalsum<-rowSums(licetable[-1], na.rm = TRUE)
-totalfishwithlice<-length(which(best2020$sum_all_lice >0))
+totalfishwithlice<-length(which(best2020$Sum_all_lice >0))
 
 n <-length(licetable$groupedsites)
 infected.fish<-rep(NA, n)
@@ -745,13 +752,13 @@ total.fish<-rep(NA, n)
 
 for(i in 1:n){
   site<-subset(best2020, best2020$groupedsites == licetable[i,1])
-  total.fish[i]<-length(which(site$sum_all_lice >= 0))
+  total.fish[i]<-length(which(site$Sum_all_lice >= 0))
 }
 total.fish
 
 for(i in 1:n){
   site<-subset(best2020, best2020$groupedsites == licetable[i,1])
-  infected.fish[i]<-length(which(site$sum_all_lice>0))
+  infected.fish[i]<-length(which(site$Sum_all_lice>0))
 }
 infected.fish
 
@@ -766,13 +773,13 @@ dtotal.fish<-rep(NA, nd)
 
 for(i in 1:nd){
   datefor<-subset(best2020, best2020$date == dates[i,1])
-  dtotal.fish[i]<-length(which(datefor$sum_all_lice >= 0))
+  dtotal.fish[i]<-length(which(datefor$Sum_all_lice >= 0))
 }
 total.fish
 
 for(i in 1:nd){
   datefor<-subset(best2020, best2020$date == dates[i,1])
-  dinfected.fish[i]<-length(which(datefor$sum_all_lice>0))
+  dinfected.fish[i]<-length(which(datefor$Sum_all_lice>0))
 }
 dinfected.fish
 
@@ -791,11 +798,11 @@ totals<-data.frame(mean.cop = numeric(0), mean.chal = numeric(0), mean.mot = num
                             mean.tot = numeric(0),se.cop = numeric(0), se.chal = numeric(0), se.mot = numeric(0), 
                             se.tot = numeric(0), mean.prev = numeric(0), sd.prev = numeric(0), se.prev = numeric(0))
 
-totals[1,1:11]<-c(mean(best2020$copsum), mean(best2020$chalsum), mean(best2020$motsum),mean(best2020$sum_all_lice),
+totals[1,1:11]<-c(mean(best2020$copsum), mean(best2020$chalsum), mean(best2020$motsum),mean(best2020$Sum_all_lice),
                           sd(best2020$copsum)/sqrt(length(best2020$fish_id)), 
                           sd(best2020$chalsum)/sqrt(length(best2020$fish_id)), 
                           sd(best2020$motsum)/sqrt(length(best2020$fish_id)), 
-                          sd(best2020$sum_all_lice)/sqrt(length(best2020$fish_id)), 
+                          sd(best2020$Sum_all_lice)/sqrt(length(best2020$fish_id)), 
                           mean(datetable$prevalence), sd(datetable$prevalence), 
                           sd(datetable$prevalence)/sqrt(length(datetable$date)))
 
@@ -884,7 +891,7 @@ for (i in 1:nloop) {
   nc3<-length(site3$countcol)
   #this is the count of fish at the sites
   site3$infected<-rep(0,nc3)
-  site3$infected = site3$infected + (site3$sum_all_lice > 0)
+  site3$infected = site3$infected + (site3$Sum_all_lice > 0)
   #This gives you a column of 1 or 0 where 1 means they are infected and 0 means they are clean
   
   ##Trying to make prevalence of the different stages##
@@ -1117,7 +1124,7 @@ tsal2020$temp_1m<-as.numeric(as.character(tsal2020$temp_1m))
 
 #$%^&
 ##*******************change the focus sites for the TS plots, if you like
-tsalsites<-c("Ritchie Bay", "Cypre River", "Bedwell River", "North Meares")
+tsalsites<-c("Bedwell Sound North","North Meares","Cypre River","Ritchie Bay","Tsapee Narrows")
 
 ########Ritchie
 #$%^&
@@ -1363,7 +1370,7 @@ site3$countcol <- rep(1,nrow(site3))
 nc3<-length(site3$countcol)
 #this is the count of fish at the sites
 site3$infected<-rep(0,nc3)
-site3$infected = site3$infected + (site3$sum_all_lice > 0)
+site3$infected = site3$infected + (site3$Sum_all_lice > 0)
 #This gives you a column of 1 or 0 where 1 means they are infected and 0 means they are clean
 
 ##Trying to make prevalence of the different stages##
@@ -1547,7 +1554,7 @@ for (i in 1:length(focussitelist))
   nc3<-length(site3$countcol)
   #this is the count of fish at the sites
   site3$infected<-rep(0,nc3)
-  site3$infected = site3$infected + (site3$sum_all_lice > 0)
+  site3$infected = site3$infected + (site3$Sum_all_lice > 0)
   #This gives you a column of 1 or 0 where 1 means they are infected and 0 means they are clean
   
   ##Trying to make prevalence of the different stages##
@@ -1727,8 +1734,8 @@ for (i in 1:length(focussitelist))
 #you can subplot this too. I think it will end up showing bedwell has lowest numbers, ritchie highest, cypre also high.
 salmonlicebest2020<-subset(nobedwell, species == "chum" | species == "coho" | species == "chinook"| species == "sockeye" |species == "salmon")
 weeksitelice<-data.frame(salmonlicebest2020$date, salmonlicebest2020$j.date, salmonlicebest2020$weeklyintvl ,salmonlicebest2020$groupedsites,  
-                         salmonlicebest2020$copsum, salmonlicebest2020$chalsum, salmonlicebest2020$motsum, salmonlicebest2020$sum_all_lice)
-names(weeksitelice)<-paste(c("date", "j.date", "weeklyintvl", "groupedsites", "copsum", "chalsum", "motsum", "sum_all_lice"))
+                         salmonlicebest2020$copsum, salmonlicebest2020$chalsum, salmonlicebest2020$motsum, salmonlicebest2020$Sum_all_lice)
+names(weeksitelice)<-paste(c("date", "j.date", "weeklyintvl", "groupedsites", "copsum", "chalsum", "motsum", "Sum_all_lice"))
 #%%%%
 #*********************
 #to add a site to the focussitelist, add | groupedsites == "desired site" to the code below for vector focusweeksitelice
