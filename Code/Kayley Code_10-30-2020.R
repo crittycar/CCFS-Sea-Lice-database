@@ -254,13 +254,6 @@ licetable<-data.frame(Motlicetab, Coplicetab[2], Challicetab[2], alltab[2], Attl
 
 #view to make sense
 view(licetable)
-
-#now adding rows together to get a sum for all lice
-#here the new column you are creating is "sum_all_lice", your frame is the previous licetable, and you are using the sum across function to sum across the mot, chal, and cope sums
-#licetable <- licetable %>% rowwise() %>%
- # dplyr::mutate(sum_all_lice= sum(c_across(motsum:chalsum)))
-#view(licetable)
-
 #make sure to check that sums make sense
 
 #Last line in this chunk assembles the stages-tables to give the MEAN of all lice stages by groupedsites
@@ -332,8 +325,8 @@ view(meanlicetablewithtotalse)
 
 par(mar=c(10,5,4,2))
 barplot(t(meanlicetablewithtotalse, col = c("dodgerblue","red","darkgreen"), border="white", 
-        font.axis=2, beside=T, legend=c(), font.lab=2, ylim = c(0,ceiling(max(meanlicetablewithtotalse))), ylab = "Mean Lice per Fish", 
-        main = "Daily Mean Lice - Clayoquot Salmon, 2020", names.arg = licesitenameedit, las = 2)
+        font.axis = 2
+        beside=T, legend=c(), font.lab=2, ylim = c(0,ceiling(max(meanlicetablewithtotalse))), ylab = "Mean Lice per Fish",main = "Daily Mean Lice - Clayoquot Salmon 2020", names.arg = licesitenameedit, las = 2)
 
 #abline(h= seq(0, ceiling(max(liceofmeanlicetable)), 1), col = "light gray")
 
@@ -827,10 +820,8 @@ Lice_Sum<-c(rbind(motile_lice, attached_lice))
 ##****************************
 
 #Need to add any new sites here in "_", like Tsapee Narrows and TRM
-Sample_Site<- c(rep(c("Bedwell Sound North", "Bedwell Sound Middle", "Bedwell Sound South", "Buckle Bay", "Cypre River", "Elbow Bank", "Keltsmaht", "Moyeha", "Ritchie Bay", 
-                      "Tranquil Estuary", "TRM", "Tsapee Narrows"), each = 2))
-
-Sample_Site<- c(rep(c("Bedwell Sound North", "Cypre River", "North Meares","Ritchie Bay", "Tsapee Narrows"), each = 2))
+unique(best2020$groupedsites)
+Sample_Site<- c(rep(c("Bedwell Sound North","North Meares" , "Cypre River", "Ritchie Bay", "Tsapee Narrows"), each = 2))
 
 #need to put in the total number of sample sites here
 ns<-(length(Sample_Site)/2)
@@ -862,7 +853,7 @@ prevsiteday <- data.frame(date = numeric(0),
                           chalprev = numeric(0),
                           copeprev = numeric(0))
 
-
+###x### this line wont run, counts object does not exist
 prevsiteday$date <- as.Date(counts$date, levels=weeklyintervals, origin=as.Date("1970-01-01"), format = "%b %d %y")  # Make sure months are ordered correctly for future plotting
 
 #how to store the data in forloops
@@ -971,8 +962,10 @@ abline(h= seq(0, ceiling(max(groupedstagesdata)), 0.1), col = "light gray")
 
 licecol<-c("darkgray","dodgerblue","red","darkgreen")
 legend("topright", cex=0.6, legend = c("Total Lice", "Motile", "Chalimus", "Copepodid"), col = licecol, title = "Lice Stage", lty = 1, lwd = 4)
+ 
+dev.copy(png,'Outputfigures/Clayoquot.daily.mean.lice.2020.png')
 
-dev.copy(png,'Clayoquot.daily.mean.lice.2020.png')
+plot(mtcars)
 
 #MAKING WEEKLY LICE TABLES
 meanlicefish<-matrix(data = NA, nrow = length(weeklyintervals), ncol = 4)
