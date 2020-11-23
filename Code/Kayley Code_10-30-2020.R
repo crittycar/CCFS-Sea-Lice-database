@@ -174,6 +174,7 @@ warnings()
 #below, just make sure that those 5 correspond the right new names 
 #etc: bedwell river <- bedwell estuary north
 #change bedwell estuary to bedwell sound in all cases
+best2020$location
 best2020$groupedsites<-best2020$location
 levels(best2020$groupedsites)<-c(levels(best2020$groupedsites), c("Bedwell Sound South","Bedwell Sound North","Bedwell Sound Middle"))
 best2020$groupedsites[best2020$groupedsites == "Bedwell estuary"]<- "Bedwell Sound South"
@@ -511,6 +512,8 @@ dev.off()
 #mean forklength in an interval
 
 #********************
+unique(best2020$species)
+
 #Can change the list to include sockeye and/or pink. 
 listspeciesinterest<-c("chum", "coho", "chinook")
 
@@ -916,7 +919,6 @@ for (i in 1:nloop) {
   siteagg3$motprev<-siteagg3$motinf/siteagg3$total.fish
   siteagg3$totalprevalence<-siteagg3$total.infected.fish/siteagg3$total.fish
   
-  
   #*************************
   #can change ranges to match the subset
   names(siteagg3)[8]<-paste("copepodid.prevalence")
@@ -957,15 +959,16 @@ stagesmatrix=matrix(groupedstagesdata)
 
 barplot(t(groupedstagesdata), col= c("darkgray","dodgerblue","red","darkgreen") , border="white", font.axis=2, 
         beside=T, legend=c(), xlab="group", font.lab=2, ylim = c(0,0.8), ylab = "Mean Lice per Fish", main = "Daily Mean Lice - Clayoquot Salmon, 2020")
-abline(h= seq(0, ceiling(max(groupedstagesdata)), 0.1), col = "light gray")
+#abline(h= seq(0, ceiling(max(groupedstagesdata)), 0.1), col = "light gray")
 
 
 licecol<-c("darkgray","dodgerblue","red","darkgreen")
 legend("topright", cex=0.6, legend = c("Total Lice", "Motile", "Chalimus", "Copepodid"), col = licecol, title = "Lice Stage", lty = 1, lwd = 4)
+
+
  
 dev.copy(png,'Outputfigures/Clayoquot.daily.mean.lice.2020.png')
 
-plot(mtcars)
 
 #MAKING WEEKLY LICE TABLES
 meanlicefish<-matrix(data = NA, nrow = length(weeklyintervals), ncol = 4)
@@ -1023,14 +1026,14 @@ rownames(groupedstagesdata)= datesforstages
 stagesmatrix=matrix(groupedstagesdata)
 
 barplot(t(groupedstagesdata), col= c("darkgray","dodgerblue","red","darkgreen") , border="white", font.axis=2, 
-        beside=T, legend=c(), xlab="group", font.lab=2, ylim = c(0,0.8), ylab = "Mean Lice per Fish", main = "Mean Lice per Fish")
-abline(h= seq(0, 0.8, 0.1), col = "light gray")
+        beside=T, legend=c(), font.lab=2, ylim = c(0,0.8), ylab = "Mean Lice per Fish", main = "Mean Lice per Fish")
+#abline(h= seq(0, 0.8, 0.1), col = "light gray")
 licecol<-c("darkgray","dodgerblue","red","darkgreen")
 legend("topright", cex=0.6, legend = c("Total Lice", "Motile", "Chalimus", "Copepodid"), col = licecol, title = "Lice Stage", lty = 1, lwd = 4)
 
 #bookmark
 #need to actually make sure that it is giving mean lice/fish because it looks like too drastic of a drop in mean lice to actually be real...
-
+View(best2020)
 
 ##ASSIGNING WEEKLY INTERVALS TO ALL THE dates in the best2020 data set 
 #weekly intervals.
@@ -1052,14 +1055,17 @@ for (i in 1:(length(JDweeklyintervalsloops)-1)) {
 #TS PLOTS
 
 #For TS plots, just change the spots that are marked (copy and paste )
-setwd(dir.in)
 
-tsaltemp <- read.csv("clayoquot.site.data.csv", header=TRUE, stringsAsFactors=FALSE,
+tsaltemp <- read.csv("Data/clayoquot.site.data.csv", header=TRUE, stringsAsFactors=FALSE,
          fileEncoding="latin1")
 
+View(tsal2020)
+?
+###NOTE there is no site data for Tsapee Narrows - ask Mack 11/22/2020
 
 #***********************
 #change year if applicable
+
 
 tsal2020<-subset(tsaltemp, year == "2020")
 
@@ -1074,18 +1080,20 @@ tsal2020$date <- as.Date(with(tsal2020, paste(year, month, day, sep="-")), "%Y-%
 #***********************
 #If you have changed the name of any sites, please change them here to match
 #the line of code below is used to lump sites together by naming them the same thing. 
-#Example, Bedwell Sound 3 and 2 are now called Bedwell Sound Middle
+#Example, Bedwell River 3 and 2 are now called Bedwell Sound Middle
+unique(tsal2020$location)
 tsal2020$groupedsites<-tsal2020$location
-levels(tsal2020$groupedsites)<-c(levels(tsal2020$groupedsites), c("Bedwell Sound South","Bedwell Sound North","Bedwell Sound Middle"))
-tsal2020$groupedsites[tsal2020$groupedsites == "Bedwell Sound"]<- "Bedwell Sound South"
-tsal2020$groupedsites[tsal2020$groupedsites == "Bedwell Sound 4"]<-"Bedwell Sound North"
+#levels(tsal2020$groupedsites)<-c(levels(tsal2020$groupedsites), c("Bedwell Sound South","Bedwell Sound North","Bedwell Sound Middle"))
 tsal2020$groupedsites[tsal2020$groupedsites == "Bedwell River"]<- "Bedwell Sound North"
-tsal2020$groupedsites[tsal2020$groupedsites == "Bedwell Sound 2"]<- "Bedwell Sound Middle"
-tsal2020$groupedsites[tsal2020$groupedsites == "Bedwell Sound 3"]<-"Bedwell Sound Middle"
-tsal2020$groupedsites[tsal2020$groupedsites == "Sniffles"]<- "Bedwell Sound Middle"
-tsal2020$groupedsites[tsal2020$groupedsites == "Sniffles 2"]<- "Bedwell Sound Middle"
-
+#tsal2020$groupedsites[tsal2020$groupedsites == "Bedwell River 4"]<-"Bedwell Sound North"
+#tsal2020$groupedsites[tsal2020$groupedsites == "Bedwell River"]<- "Bedwell Sound North"
+#tsal2020$groupedsites[tsal2020$groupedsites == "Bedwell River 2"]<- "Bedwell Sound Middle"
+#tsal2020$groupedsites[tsal2020$groupedsites == "Bedwell River 3"]<-"Bedwell Sound Middle"
+#tsal2020$groupedsites[tsal2020$groupedsites == "Sniffles"]<- "Bedwell Sound Middle"
+#tsal2020$groupedsites[tsal2020$groupedsites == "Sniffles 2"]<- "Bedwell Sound Middle"
+View(tsal2020$groupedsites)
 loctsal<-unique(tsal2020$groupedsites)
+print(loctsal)
 ritchieplottsal<-data.frame(meansurfsalt = numeric(0),
                             meansalt1 = numeric(0),
                             meantempsurf = numeric(0),
@@ -1111,16 +1119,18 @@ tsal2020$salt_1m<-as.numeric(as.character(tsal2020$salt_1m))
 tsal2020$temp_surf<-as.numeric(as.character(tsal2020$temp_surf))
 tsal2020$temp_1m<-as.numeric(as.character(tsal2020$temp_1m))
 
-#$%^&
 ##*******************change the focus sites for the TS plots, if you like
-tsalsites<-c("Bedwell Sound North","North Meares","Cypre River","Ritchie Bay","Tsapee Narrows")
 
-########Ritchie
+tsalsites<-c("Bedwell Sound North","North Meares","Cypre River","Ritchie Bay")
+
+########Tables and plots of site data - Ritchie as example below
 #$%^&
 #********
 #for a table and plot of a site, change site you choose in tsalsites[#], if you like. You can
-#make a for loop to produce all the sites' plots and tables at once. I ran out of time.
-temptsal<-subset(tsal2020, groupedsites == tsalsites[1])
+#make a for loop to produce all the sites' plots and tables at once. I ran out of time
+#ex if you want Bedwell Sound north, you input 1 into tsalsites[]
+
+temptsal<-subset(tsal2020, groupedsites == tsalsites[4])
 temptsal$date<-as.Date(temptsal$date, origin ="%Y-%m-%d")
 datetsal<-as.Date(unique(temptsal$date), origin = "%Y-%m-%d")
 
@@ -1333,12 +1343,6 @@ mtext(side = 4, "Temperature (C)", line = 2.5, cex = 1.5)
 #Below gives prevalence for the main 3 ccfs sites (cypre, north meares, and ritchie), 
 #with standard deviation
 
-dir.in<-"C:/Users/Rowen Monks/Desktop/CedarCoast/Data/WorkingCode"
-dir.outt<-"C:/Users/Rowen Monks/Desktop/CedarCoast/Data/WorkingCode/codeoutput"
-dir.plot<-"C:/Users/Rowen Monks/Desktop/CedarCoast/Data/WorkingCode/codeoutput/plots"
-
-setwd(dir.in)
-
 #****************
 #ctrl f the astrix row to find where edits must be made
 colours<-rainbow(n)
@@ -1350,7 +1354,9 @@ par(mar = c(3, 5,5,2))
 par(mfrow=c(1,1))
 
 #remove bedwell as not enough data for analysis
-nobedwell <- filter(best2020, groupedsites != "Bedwell Sound North")
+
+nobedwell <- best2020 %>% filter(groupedsites != "Bedwell Sound North")
+
 site3<- nobedwell
 #this gives you an individual site to work with.
 
@@ -1722,6 +1728,7 @@ for (i in 1:length(focussitelist))
 #Now you can plot each site's mean, lci and uci over time
 #you can subplot this too. I think it will end up showing bedwell has lowest numbers, ritchie highest, cypre also high.
 salmonlicebest2020<-subset(nobedwell, species == "chum" | species == "coho" | species == "chinook"| species == "sockeye" |species == "salmon")
+
 weeksitelice<-data.frame(salmonlicebest2020$date, salmonlicebest2020$j.date, salmonlicebest2020$weeklyintvl ,salmonlicebest2020$groupedsites,  
                          salmonlicebest2020$copsum, salmonlicebest2020$chalsum, salmonlicebest2020$motsum, salmonlicebest2020$Sum_all_lice)
 names(weeksitelice)<-paste(c("date", "j.date", "weeklyintvl", "groupedsites", "copsum", "chalsum", "motsum", "Sum_all_lice"))
