@@ -43,6 +43,8 @@
 
 #%$ - used for finding a bookmark
 
+#X# Represents a current break in code that needs to be worked on
+
 ##############################################################
 
 ##SET UP##
@@ -312,8 +314,8 @@ write.csv(licetable,file.path(data.output.path,"totalsumslicetable.csv"))
 #ok not sure what is going on here but this is not working. error: Error in -0.01 * height : non-numeric argument to binary operator
 #OLD 2019
 #licesitenameedit<-c("Buckle Bay", "Cypre River", "Elbow Bank",
-                    "Keltsmaht", "Lone Cone Light", "Moyeha", "Ritchie Bay", "Tranquil Est", 
-                    "Tsapee Narrows","Bedwell Sound S", "Bedwell Est N", "Bedwell Middle"  )
+ #                   "Keltsmaht", "Lone Cone Light", "Moyeha", #"Ritchie Bay", "Tranquil Est", 
+ #                   "Tsapee Narrows","Bedwell Sound S", "Bedwell Est N", "Bedwell Middle"  )
 
 #2020 Update, change name in names.arg
 licesitenameedit <-c("Bedwell Sound North","North Meares", "Cypre River","Ritchie Bay","Tsapee Narrows")
@@ -326,7 +328,7 @@ view(meanlicetablewithtotalse)
 
 par(mar=c(10,5,4,2))
 barplot(t(meanlicetablewithtotalse, col = c("dodgerblue","red","darkgreen"), border="white", 
-        font.axis = 2
+        font.axis = 2,
         beside=T, legend=c(), font.lab=2, ylim = c(0,ceiling(max(meanlicetablewithtotalse))), ylab = "Mean Lice per Fish",main = "Daily Mean Lice - Clayoquot Salmon 2020", names.arg = licesitenameedit, las = 2)
 
 #abline(h= seq(0, ceiling(max(liceofmeanlicetable)), 1), col = "light gray")
@@ -341,7 +343,7 @@ licestagelegend<-legend("topright", cex=0.6, legend = c("Total Lice", "Motile", 
 # Resuming ~VECTOR CREATION~
 
 ##JULIAN DATES
-view(best2020)
+View(best2020)
 #making a table with weekly intervals.
 juliandates<-julian(best2020$date)
 firstday<-min(juliandates)
@@ -436,7 +438,7 @@ presentmeanflchum<-meandatetable[notmissingchum,]
 
 write.csv(meandatetable,file.path(data.output.path,"mean.lice.and.forklength.by.date.2020.csv"))
 
-view(meandatetable)
+View(meandatetable)
 #daily forklength for all species.
 #begin with setting the path for the figure to be saved to: figures.path
 jpeg(filename = "OutputFigures/DailyForkLength2020.jpg")
@@ -625,7 +627,7 @@ plotchumfl$weeklyintervals<-as.Date(plotchumfl$weeklyintervals, format = "%b %d 
 #chinNan<-as.numeric(as.character(subset(chinfl, meanflfish == "NaN")))
 #chinflmeanpresent<-chinfl[-chinNan,2]
 #chinfl[chinflmeanpresent]
-view(best2020)
+View(best2020)
 max(best2020$length)
 #set range for axes
 yrangefl<-seq(30, 120, length.out = length(weeklyintervals))
@@ -699,7 +701,7 @@ Callicetab<-aggregate(calmotsum~groupedsites, data = best2020, sum)
 
 # This is the final bar chart table! :)))
 licetable<-data.frame(Motlicetab, Attlicetab[2], Coplicetab[2], Challicetab[2], Leplicetab[2], Callicetab[2])
-view(licetable)
+View(licetable)
 #barplot for total mean lice per location group
 
 # want motsum and attached and Sum_all_lice, number of fish infected and number of total fish by date.
@@ -818,7 +820,7 @@ write.csv(totals, "OutputData/totalabundances.prevalence.csv")
 #This is for the ggplot which is pretty meh. We didn't use it, but it could be used.
 motile_lice<-licetable$motsum
 attached_lice<-licetable$attachedsum
-view(motile_lice)
+
 Lice_Sum<-c(rbind(motile_lice, attached_lice))
 ##****************************
 
@@ -856,7 +858,7 @@ prevsiteday <- data.frame(date = numeric(0),
                           chalprev = numeric(0),
                           copeprev = numeric(0))
 
-###x### this line wont run, counts object does not exist
+#x# this line wont run, counts object does not exist
 prevsiteday$date <- as.Date(counts$date, levels=weeklyintervals, origin=as.Date("1970-01-01"), format = "%b %d %y")  # Make sure months are ordered correctly for future plotting
 
 #how to store the data in forloops
@@ -1067,7 +1069,7 @@ View(tsal2020)
 #change year if applicable
 
 
-tsal2020<-subset(tsaltemp, year == "2020")
+TSAL2020 <- subset(tsaltemp, year == "2020")
 
 
 #***********************
