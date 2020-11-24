@@ -1,14 +1,17 @@
 #Title: Sea Lice Monitoring Outputs
 #Author : Rowen Monks
 #Last updated : August 28, 2019
-#Description : Makes mean prevalence, abundance, TS and forklength plots for Sea Lice Monitoring Program 
+#Description : Makes mean prevalence, abundance, TS and forklength plots for 
+#Sea Lice Monitoring Program 
 #at Cedar Coast Field Station. Plots are made for all available locations, or for Bedwell Estuary
 #(Bedwell North/Bedwell River), Cypre River, and Ritchie Bay
 #Based on sea lice monitoring data of Cedar Coast Field Station
 
 #NOTES: 
 #Notes for Rowen: 
-#Hi! Thanks for taking a look at this! The sections I am having trouble with can be found be searchig "#X#". There is a description of the issue I am facing with all of them. First, do get yourself setup, follow the instructions below!
+#Hi! Thanks for taking a look at this! The sections I am having trouble with can
+#be found be searchig "#X#". There is a description of the issue I am facing 
+#with all of them. First, do get yourself setup, follow the instructions below!
 
 #This is a mostly automated code. That means that if you have the data and the code, you should be able to run everything and have a solid output - in theory. To start, make a new project and set your working directory. Make sure you set your working directory to a specified folder. In the folder you should make a new folder called /Data, where you put the dataset required for this project: the sea lice data, forplots2020, and the site data, clayoquot.site.data. Make sure also that the code is in the main folder where you set the wd. Now, you should be able to run the code and all the output data and figures should save to specified folders created from here on out.
 
@@ -17,7 +20,8 @@
 # The purse seined fish were put into a different sheet on the Best.Clayoquot.Sealice.data.2019.xlsx file. ie. not
 # included in the following analysis.
 
-# This code has been made so that it only has to be edited slightly to produce plots/tables on different data.
+# This code has been made so that it only has to be edited slightly to produce 
+#plots/tables on different data.
 # I tried to indicate where any edits should be made
 # Please look for ##******************* which indicates that there is something
 # for you to add/edit in the code (ex. "groupedsites name",)
@@ -328,7 +332,8 @@ meanlicetablewithtotalse$groupedsites
 meanlicetablewithtotalse <- na.omit(meanlicetablewithtotalse)
 view(meanlicetablewithtotalse)
 #plot area 
-#This plot requires code from farther down to be initiated properly, run all first
+#x#This plot requires code from farther down to be initiated properly, will not run
+#w/o objects futher down
 par(mar=c(10,5,4,2))
 barplot(t(meanlicetablewithtotalse, col = c("dodgerblue","red","darkgreen"), border="white", 
         font.axis = 2,
@@ -859,7 +864,7 @@ prevsiteday <- data.frame(date = numeric(0),
                           chalprev = numeric(0),
                           copeprev = numeric(0))
 
-#x# this line wont run, counts object does not exist
+#x# this line wont run, counts object does not exist. Refering to salmocounts?
 prevsiteday$date <- as.Date(counts$date, levels=weeklyintervals, origin=as.Date("1970-01-01"), format = "%b %d %y")  # Make sure months are ordered correctly for future plotting
 
 #how to store the data in forloops
@@ -1044,7 +1049,6 @@ View(best2020)
 #set up vectors to hold data
 JDweeklyintervalsloops<-c(0, JDweeklyintervals)
 best2020$weeklyintvl<-rep(0, each = length(best2020$date))
-
 #using subsets to add data of appropriate date to the vectors
 for (i in 1:(length(JDweeklyintervalsloops)-1)) {
   loopintvl<-subset(best2020, best2020$j.date > JDweeklyintervalsloops[i] & best2020$j.date <= JDweeklyintervalsloops[i+1])
@@ -1136,6 +1140,9 @@ temptsal<-subset(tsal2020, groupedsites == tsalsites[4])
 temptsal$date<-as.Date(temptsal$date, origin ="%Y-%m-%d")
 datetsal<-as.Date(unique(temptsal$date), origin = "%Y-%m-%d")
 
+#x# it looks like the objects being pulled from in this forloop are not returning any actual values, just NA's and 0's. I think it has to do with the plotsal df's, 
+#these issues seem to propogate into the plots below when tempdates is used
+
 for (j in 1:length(datetsal)) {
   #subsetting by the first date
   tempdates<-subset(temptsal, date == datetsal[j])  
@@ -1200,9 +1207,12 @@ lines(ritchieplottsal1$meantempsurf~xts,
 axis(4, ylim = yrangets3, cex.lab=1.5,cex.axis=1.5)
 mtext(side = 4, "Temperature (C)", line = 2.5, cex = 1.5)
 
+#x# it looks like there is no temperature or salinity variation for any of these
+#sampling dates. This is not correct.
 
 write.csv(ritchieplottsal1, paste("meanTS.",unique(temptsal$groupedsites)))
 
+dev.off()
 #####Cypre
 
 temptsal<-subset(tsal2020, groupedsites == tsalsites[2])
@@ -1357,9 +1367,11 @@ par(mar = c(3, 5,5,2))
 par(mfrow=c(1,1))
 
 #remove bedwell as not enough data for analysis
-
+#x# for some reason this function does not work on my end, the next line seems to fix it
 nobedwell <- best2020 %>% filter(groupedsites != "Bedwell Sound North")
-
+nobedwell <- subset(best2020, groupedsites!="Bedwell Sound North")
+#check with unique
+unique(nobedwell$location)
 site3<- nobedwell
 #this gives you an individual site to work with.
 
@@ -1460,12 +1472,13 @@ overallprev<-data.frame(weeklyprevstages,JDweeklyintervalsloops[-1])
 overallprev$JDweeklyintervalsloops..1.<-as.Date(overallprev$JDweeklyintervalsloops..1., origin = as.Date("1970-01-01"))
 overallprev$JDweeklyintervalsloops..1.<-format(  overallprev$JDweeklyintervalsloops..1., format = "%b %d %y")
 
+
 #the range for the plots
 forprevyrange<-seq(0.00, signif(max(siteagg3$total.prevalence, na.omit = TRUE ), digits = 2), 0.01)
 loops1yrange.dp<-range(forprevyrange)
 #colours for the plot
 coloursloop<-c("darkgray","darkgreen","dodgerblue","red")
-
+#x# unsure where to fix this difference in row length
 overallprev$weekly<-as.Date(weeklyintervals, format = "%Y-%m-%d")
 
 overallprev<-na.omit(overallprev)
@@ -1511,7 +1524,7 @@ lines(overallprev$weekly, overallprev$chalp, lty=linetype[3], pch=1, lwd = 1.5, 
 segments(x0 = segp, y0 = chalysegl, x1 = segp, y1 = chalysegu, lwd = 2, col = "dodgerblue")  # confidence intervals
 arrows(x0 = segp, chalysegl, x1 = segp, chalysegu, lwd = 1, angle = 90,
        code = 3, length = 0.05, col = "dodgerblue")
-
+#x# return to fix missing values or NA's
 lines(overallprev$weekly, overallprev$motp, lty=linetype[4], pch=1, lwd = 1.5, type ="b", col = "red" )
 segments(x0 = segp, y0 = motysegl, x1 = segp, y1 = motysegu, lwd = 2, col = "red" )  # confidence intervals
 arrows(x0 = segp, motysegl, x1 = segp, motysegu, lwd = 1, angle = 90,col = "red" ,
@@ -1731,7 +1744,10 @@ for (i in 1:length(focussitelist))
 #Now you can plot each site's mean, lci and uci over time
 #you can subplot this too. I think it will end up showing bedwell has lowest numbers, ritchie highest, cypre also high.
 salmonlicebest2020<-subset(nobedwell, species == "chum" | species == "coho" | species == "chinook"| species == "sockeye" |species == "salmon")
-
+#x# when creating this df it looks like weekly invterval does not exist. I went 
+#I went back to check its integration and I can't seem to get it to work at all
+#line 1051 its added to best 2020 but it seems like it does not add here
+#this error propogates all the way to focussitelist inception
 weeksitelice<-data.frame(salmonlicebest2020$date, salmonlicebest2020$j.date, salmonlicebest2020$weeklyintvl ,salmonlicebest2020$groupedsites,  
                          salmonlicebest2020$copsum, salmonlicebest2020$chalsum, salmonlicebest2020$motsum, salmonlicebest2020$Sum_all_lice)
 names(weeksitelice)<-paste(c("date", "j.date", "weeklyintvl", "groupedsites", "copsum", "chalsum", "motsum", "Sum_all_lice"))
