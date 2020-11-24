@@ -61,7 +61,6 @@
 #--------------make project folders and folder paths----------------------------
 #set your wd here, MAKE SURE ITS SET TO YOUR PROJECT DATA BASE IN SESSION DROPDOWN MENU ABOVE
 
-
 getwd()
 wd <- getwd()  # working directory
 
@@ -141,7 +140,7 @@ best2020<-data.frame(best2020)
 best2020[ , 11:25][is.na(best2020[ , 11:25] ) ] <- 0 
 names(best2020)[1]<-paste("fish_id")
 best2020$sum_all_lice[is.na(best2020$sum_all_lice)]<-0
-#view(best2020)
+View(best2020)
 #for some reason the sum_all_lice column is not calculating adding all the lice counts properly
 #to fix this we need to replace the column entirely by summing across all the rows
 #library(dplyr)
@@ -325,7 +324,7 @@ meanlicetablewithtotalse$groupedsites
 meanlicetablewithtotalse <- na.omit(meanlicetablewithtotalse)
 view(meanlicetablewithtotalse)
 #plot area 
-
+#This plot requires code from farther down to be initiated properly, run all first
 par(mar=c(10,5,4,2))
 barplot(t(meanlicetablewithtotalse, col = c("dodgerblue","red","darkgreen"), border="white", 
         font.axis = 2,
@@ -438,7 +437,6 @@ presentmeanflchum<-meandatetable[notmissingchum,]
 
 write.csv(meandatetable,file.path(data.output.path,"mean.lice.and.forklength.by.date.2020.csv"))
 
-View(meandatetable)
 #daily forklength for all species.
 #begin with setting the path for the figure to be saved to: figures.path
 jpeg(filename = "OutputFigures/DailyForkLength2020.jpg")
@@ -572,10 +570,9 @@ sdflfish[((length(weeklyintervals)*2)+2):(length(weeklyintervals)*3)]<-sdchinook
 
 meanflfish<-as.numeric(as.character(meanflfish))
 
-#meanflfish <- as.numeric(as.character(meanflfish))
+meanflfish <- as.numeric(as.character(meanflfish))
 
-
-######RUN THIS AFTER NEXT CHUNK OF CODE TO MAKE WORK
+######RUN THIS AFTER NEXT CHUNK OF CODE TO MAKE WORK, chunk starting with speciesintrest
 weeklyfl$meanflfish<-as.numeric(as.character(weeklyfl$meanflfish))
 
 view(weeklyfl$meanflfish)
@@ -950,7 +947,6 @@ for (i in 1:nloop) {
 }
 
 
-
 #Daily mean lice with stages
 datesforstages<-format(meandatetable$date, format = "%b %d %y")
 groupedstagesdata<-meandatetable[,c(2,3,6,5)]
@@ -1014,6 +1010,8 @@ for (i in 2:(length(weeklyintervals))) {
 }
 
 
+dev.off()
+
 
 meanlicefish1<-data.frame(cbind(meanlicefish, weeklyintervals))
 rownames(meanlicefish)<-as.Date(weeklyintervals, origin=as.Date("1970-01-01"))
@@ -1061,16 +1059,13 @@ for (i in 1:(length(JDweeklyintervalsloops)-1)) {
 tsaltemp <- read.csv("Data/clayoquot.site.data.csv", header=TRUE, stringsAsFactors=FALSE,
          fileEncoding="latin1")
 
-View(tsal2020)
-?
 ###NOTE there is no site data for Tsapee Narrows - ask Mack 11/22/2020
 
 #***********************
 #change year if applicable
 
 
-TSAL2020 <- subset(tsaltemp, year == "2020")
-
+tsal2020 <- subset(tsaltemp, year == "2020")
 
 #***********************
 #remove all the comments on the csv file
@@ -1084,6 +1079,7 @@ tsal2020$date <- as.Date(with(tsal2020, paste(year, month, day, sep="-")), "%Y-%
 #the line of code below is used to lump sites together by naming them the same thing. 
 #Example, Bedwell River 3 and 2 are now called Bedwell Sound Middle
 unique(tsal2020$location)
+
 tsal2020$groupedsites<-tsal2020$location
 #levels(tsal2020$groupedsites)<-c(levels(tsal2020$groupedsites), c("Bedwell Sound South","Bedwell Sound North","Bedwell Sound Middle"))
 tsal2020$groupedsites[tsal2020$groupedsites == "Bedwell River"]<- "Bedwell Sound North"
@@ -1187,6 +1183,7 @@ legend("bottomright", legend = c("Sal 0 m", "Sal 1 m", "Temp 0 m", "Temp 1 m"),
 par(new = TRUE)
 
 yrangets3<-c(8,16)
+
 
 plot(ritchieplottsal1$meantemp1~xts,  type = "n", axes = FALSE,
      xlim = xrangets, ylim = yrangets3, ylab = "",
@@ -1374,6 +1371,7 @@ site3$infected = site3$infected + (site3$Sum_all_lice > 0)
 #Make a column for the cope, chal and motile stages
 site3$copinf<-rep(0,nc3)
 site3$copinf = site3$copinf + (site3$Lep_cope >0 | site3$unid_cope >0| site3$Caligus_cope >0)
+
 site3$copinf[is.na(site3$copinf)]<-0
 site3$chalinf<-rep(0,nc3)
 site3$chalinf = site3$chalinf + (site3$chalA >0 | site3$chalB >0| site3$chal_unid >0)
@@ -1529,12 +1527,12 @@ arrows(x0 = segp, motysegl, x1 = segp, motysegu, lwd = 1, angle = 90,col = "red"
 names(overallprev)
 names(ddprevweek)
 
-setwd(dir.outt)
-write.csv(overallprev[,-9], "Clayoquot.weekly.mean.prevalence.2019.csv")
+
+write.csv(overallprev[,-9], "OutputData/Clayoquot.weekly.mean.prevalence.2020.csv")
 
 #saves the plot
-setwd(dir.plot)
-dev.copy(png,'Clayoquot.weekly.mean.prevalence.2019.png')
+
+dev.copy(png,'OutputFigures/Clayoquot.weekly.mean.prevalence.2020.png')
 dev.off()
 
 #A for loops for specific sites. 
@@ -1700,11 +1698,10 @@ for (i in 1:length(focussitelist))
   
   
   #saves the plot
-  setwd(dir.plot)
-  dev.copy(png,'Clayoquot.weekly.mean.prevalence.2019.png',paste(focussitelist[i]))
+  dev.copy(png,'OutputFigures/Clayoquot.weekly.mean.prevalence.2020.png',paste(focussitelist[i]))
   dev.off()
   #tables of data for each site
-  write.csv(overallprev[,-9], paste(focussitelist[1],"weekly.mean.prevalence.2019"))
+  write.csv(overallprev[,-9], paste(focussitelist[1],"OutputData/weekly.mean.prevalence.2020"))
   
 }
 
@@ -1956,8 +1953,8 @@ arrows(x0 = mp, t(allsdplneg), x1 = mp, t(allsdpu), lwd = 0.75, angle = 90,
 legend("topleft", box.lwd = "o", col = c("darkgreen","dodgerblue","red","darkgray"), lwd = 3, cex = 1, legend = c("Copepodid", "Chalimus", "Motile", "Total"))
 axis(side = 2, at = seq(from=0, to=33, by=3), las = 1)
 
-setwd(dir.outt)
-dev.copy(png,'Clayoquot Mean Lice Abundance per Fish.png')
+dev.copy(png,'OutputFigures/ClayoquotMeanLiceAbundancePerFish_2020.png')
+dev.off()
 dev.off()
 
 ################################################ END OF 2nd FIND AND REPLACE
@@ -2004,8 +2001,8 @@ legend("topleft", box.lwd = "o", col = c("darkgreen","dodgerblue","red","darkgra
 axis(side = 2, at = seq(from=0, to=40, by=5), las = 1)
 
 
-setwd(dir.outt)
-dev.copy(png,'Cypre River Mean Lice Abundance per Fish.png')
+dev.copy(png,'OutputFigures/CypreRiverMeanLiceAbundancePerFish_2020.png')
+dev.off()
 dev.off()
 
 ################################################
@@ -2054,8 +2051,8 @@ legend("topleft", box.lwd = "o", col = c("darkgreen","dodgerblue","red","darkgra
 axis(side = 2, at = seq(from=0, to=26, by=2), las = 1)
 
 
-setwd(dir.outt)
-dev.copy(png,'Ritchie Bay Mean Lice Abundance per Fish.png')
+dev.copy(png,'OutputFigures/RitchieBayMeanLiceAbundancePerFish_2020.png')
+dev.off()
 dev.off()
 
 ###############################################
@@ -2104,8 +2101,8 @@ axis(side = 2, at = seq(from=0, to=10, by=2), las = 1)
 
 
 
-setwd(dir.outt)
-dev.copy(png,'Bedwell Sound Mean Lice Abundance per Fish.png')
+dev.copy(png,'OutputFigures/BedwellSoundMeanLiceAbundancePerFish_2020.png')
+dev.off()
 dev.off()
 
 
@@ -2175,6 +2172,5 @@ axis(1, at=match(seq(as.Date(x_min), x_max, "years"),index(df))*(1+space),
 axis(side = 1, at = length(bpintvls), labels = bpintvls)
 mtext("Mean Lice Abundance per Fish", side = 2, line = 2.4)
 
-setwd(dir.outt)
-dev.copy(png,'Mean Lice Abundance per Fish.png')
+dev.copy(png,'OutputFigures/MeanLiceAbundancePerFish_2020.png')
 dev.off()
