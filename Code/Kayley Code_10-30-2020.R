@@ -7,6 +7,10 @@
 #Based on sea lice monitoring data of Cedar Coast Field Station
 
 #NOTES: 
+#Notes for Rowen: 
+#Hi! Thanks for taking a look at this! The sections I am having trouble with can be found be searchig "#X#". There is a description of the issue I am facing with all of them. First, do get yourself setup, follow the instructions below!
+
+#This is a mostly automated code. That means that if you have the data and the code, you should be able to run everything and have a solid output - in theory. To start, make a new project and set your working directory. Make sure you set your working directory to a specified folder. In the folder you should make a new folder called /Data, where you put the dataset required for this project: the sea lice data, forplots2020, and the site data, clayoquot.site.data. Make sure also that the code is in the main folder where you set the wd. Now, you should be able to run the code and all the output data and figures should save to specified folders created from here on out.
 
 #To use this code, make a .csv file of your new datafile, and ensure it matches the format of the original data file.
 #Prevalence = number of infected fish / total number of fish
