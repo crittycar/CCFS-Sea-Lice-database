@@ -148,7 +148,7 @@ best2020<-data.frame(best2020)
 best2020[ , 11:25][is.na(best2020[ , 11:25] ) ] <- 0 
 names(best2020)[1]<-paste("fish_id")
 best2020$sum_all_lice[is.na(best2020$sum_all_lice)]<-0
-View(best2020)
+
 #for some reason the sum_all_lice column is not calculating adding all the lice counts properly
 #to fix this we need to replace the column entirely by summing across all the rows
 #library(dplyr)
@@ -178,7 +178,6 @@ warnings()
 #Example, Bedwell estuary 3 and 2 are now called Bedwell Estuary Middle
 #Ex 2020 had no differentiation among bedwell sites, so all are just named Bedwell  
 
-
 #from here its clear that 2020 only had 5 unique sample locations
 #below, just make sure that those 5 correspond the right new names 
 #etc: bedwell river <- bedwell estuary north
@@ -193,9 +192,7 @@ best2020$groupedsites[best2020$groupedsites == "Bedwell estuary 2"]<- "Bedwell S
 best2020$groupedsites[best2020$groupedsites == "Bedwell estuary 3"]<-"Bedwell Sound Middle"
 best2020$groupedsites[best2020$groupedsites == "Sniffles"]<- "Bedwell Sound Middle"
 best2020$groupedsites[best2020$groupedsites == "Sniffles 2"]<- "Bedwell Sound Middle"
-unique(best2020$location)
 
-unique(best2020$groupedsites)
 #Just some subsets that are useful for outlining groups of sites, but weren't used much for plots.
 #replace all estuary to sound
 bedwell2020<-data.frame(subset(best2020, groupedsites == "Bedwell Sound North" | groupedsites == "Bedwell Sound Middle" | groupedsites == "Bedwell Sound South"))
@@ -225,6 +222,7 @@ focus2020<-data.frame(subset(best2020, groupedsites == "North Meares" |groupedsi
 #columns if the column names have changed.
 colnames(best2020)
 #not sure what this subset is for? -CC
+#I think it is for a total count of the lice -RM
 salmcounts<-subset(best2020[,c(11:25)])
 #motile lice sub
 motlice<-best2020[,c("Caligus_mot", "Caligus_gravid", "Lep_gravid", "Lep_nongravid", "Lep_male", "Lep_PAfemale", "Lep_PAmale", "unid_PA", "unid_adult")]
@@ -234,6 +232,7 @@ copes<-best2020[,c("Lep_cope", "Caligus_cope", "unid_cope")]
 chals<-best2020[,c("chalA", "chalB", "chal_unid")]
 #attached lice sub
 attlice<-best2020[,c("Lep_cope","chalA","chalB","Caligus_cope","unid_cope","chal_unid")]
+#total lice sub
 
 
 #count total fish using length function
@@ -245,12 +244,12 @@ abstotalfish<-sum(best2020$countcol)
 #must use countcol for counting total fish because fish_ID is given to species that aren't included in analysis.
 #mean lice = sum of sum of lice / abstotal
 
-#Below gives columns of summed motiles, attached, copepodids and chalimus. Useful for prevalence and abundance plots.
+#Below gives columns of summed motiles, attached, copepodids, chalimus, and total counts. Useful for prevalence and abundance plots.
 best2020$motsum<-rowSums(motlice, na.rm = TRUE)
 best2020$copsum<-rowSums(copes, na.rm = TRUE)
 best2020$chalsum<-rowSums(chals, na.rm = TRUE)
 best2020$attachedsum<-rowSums(attlice, na.rm = TRUE)
-
+best2020$Sum_all_lice<-rowSums(salmcounts, na.rm = T)
 
 #Last line in this chunk assembles the stages-tables to give the SUM of all lice stages by groupedsites
 
@@ -330,14 +329,19 @@ licesitenameedit <-c("Bedwell Sound North","North Meares", "Cypre River","Ritchi
 #check if site names match
 meanlicetablewithtotalse$groupedsites
 meanlicetablewithtotalse <- na.omit(meanlicetablewithtotalse)
+meanlicetablewithtotalse[,2:6] <- as.matrix(sapply(meanlicetablewithtotalse[,2:ncol(meanlicetablewithtotalse)], as.numeric))
 view(meanlicetablewithtotalse)
 #plot area 
 #x#This plot requires code from farther down to be initiated properly, will not run
 #w/o objects futher down
 par(mar=c(10,5,4,2))
 barplot(t(meanlicetablewithtotalse, col = c("dodgerblue","red","darkgreen"), border="white", 
-        font.axis = 2,
-        beside=T, legend=c(), font.lab=2, ylim = c(0,ceiling(max(meanlicetablewithtotalse))), ylab = "Mean Lice per Fish",main = "Daily Mean Lice - Clayoquot Salmon 2020", names.arg = licesitenameedit, las = 2)
+        font.axis = 2, beside=T, legend=c(), font.lab=2, ylim = c(0,ceiling(max(meanlicetablewithtotalse))),
+        ylab = "Mean Lice per Fish",main = "Daily Mean Lice - Clayoquot Salmon 2020", names.arg = licesitenameedit, las = 2))
+#Below works to create a barplot. Need to add colours and a legend - RM
+barplot(as.matrix(meanlicetablewithtotalse[,2:6]), names = meanlicetablewithtotalse[,1], border="white", 
+          font.axis = 2, beside=T, font.lab=2, ylim = c(0,ceiling(max(meanlicetablewithtotalse$Sum_all_lice))),
+          ylab = "Mean Lice per Fish",main = "Daily Mean Lice - Clayoquot Salmon 2020", names.arg = licesitenameedit, las = 2)
 
 #abline(h= seq(0, ceiling(max(liceofmeanlicetable)), 1), col = "light gray")
 
