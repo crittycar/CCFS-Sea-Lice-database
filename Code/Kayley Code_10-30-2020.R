@@ -68,10 +68,9 @@
 
 #--------------make project folders and folder paths----------------------------
 #set your wd here, MAKE SURE ITS SET TO YOUR PROJECT DATA BASE IN SESSION DROPDOWN MENU ABOVE
-
-getwd()
-wd <- getwd()  # working directory
-
+wd <- "C:/Users/Rowen/OneDrive/Desktop/github/CCFS-Sea-Lice-database/Code"
+#wd <- getwd()  # working directory
+setwd(wd)
 folders <- c("Code", "Data", "OutputFigures", "OutputData")
 
 # function to create folders below
@@ -869,8 +868,7 @@ prevsiteday <- data.frame(date = numeric(0),
                           copeprev = numeric(0))
 
 #x# this line wont run, counts object does not exist. Refering to salmocounts?
-prevsiteday$date <- as.Date(counts$date, levels=weeklyintervals, origin=as.Date("1970-01-01"), format = "%b %d %y")  
-# Make sure months are ordered correctly for future plotting
+prevsiteday$date <- as.Date(counts$date, levels=weeklyintervals, origin=as.Date("1970-01-01"), format = "%b %d %y")  # Make sure months are ordered correctly for future plotting
 
 #how to store the data in forloops
 #prevsiteweek[i,1] <- date.name[i]
@@ -1079,6 +1077,7 @@ tsaltemp <- read.csv("Data/clayoquot.site.data.csv", header=TRUE, stringsAsFacto
 
 
 tsal2020 <- subset(tsaltemp, year == "2020")
+
 #***********************
 #remove all the comments on the csv file
 unique(tsal2020$location)
@@ -1101,7 +1100,7 @@ tsal2020$groupedsites[tsal2020$groupedsites == "Bedwell River"]<- "Bedwell Sound
 #tsal2020$groupedsites[tsal2020$groupedsites == "Bedwell River 3"]<-"Bedwell Sound Middle"
 #tsal2020$groupedsites[tsal2020$groupedsites == "Sniffles"]<- "Bedwell Sound Middle"
 #tsal2020$groupedsites[tsal2020$groupedsites == "Sniffles 2"]<- "Bedwell Sound Middle"
-View(tsal2020)
+View(tsal2020$groupedsites)
 loctsal<-unique(tsal2020$groupedsites)
 print(loctsal)
 ritchieplottsal<-data.frame(meansurfsalt = numeric(0),
@@ -1140,7 +1139,7 @@ tsalsites<-c("Bedwell Sound North","North Meares","Cypre River","Ritchie Bay")
 #make a for loop to produce all the sites' plots and tables at once. I ran out of time
 #ex if you want Bedwell Sound north, you input 1 into tsalsites[]
 
-temptsal<-subset(tsal2020, groupedsites == tsalsites[2])
+temptsal<-subset(tsal2020, groupedsites == tsalsites[4])
 temptsal$date<-as.Date(temptsal$date, origin ="%Y-%m-%d")
 datetsal<-as.Date(unique(temptsal$date), origin = "%Y-%m-%d")
 
@@ -1154,7 +1153,7 @@ for (j in 1:length(datetsal)) {
     #taking the mean of the salinity/temp values for the one date
     ritchieplottsal[j,k]<-mean(tempdates[,(5+k)])
   }
-{
+  {
     cypreplotsal[j,k]<-mean(tempdates[,(5+k)])
   }
   {
@@ -1162,8 +1161,6 @@ for (j in 1:length(datetsal)) {
   }
 }
 
-
-view(ritchieplottsal)
 
 ritchieplottsal<-data.frame(datetsal, ritchieplottsal)
 ritchieplottsal$datetsal<-as.Date(format(ritchieplottsal$datetsal, format = "%Y/%m/%d"))
@@ -1179,7 +1176,7 @@ xrangets<-as.Date(format(range(ritchieplottsal1$datetsal), format = "%Y-%m-%d"))
 xts<-as.Date(format(ritchieplottsal1$datetsal, format = "%Y-%m-%d"))
 range(ritchieplottsal1$meansalt1)
 yrangets2<-c(5,35)
-view(ritchieplottsal1)
+
 par(mar = c(4,5,5,4))
 
 par(new = FALSE)
