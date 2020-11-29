@@ -68,8 +68,7 @@
 
 #--------------make project folders and folder paths----------------------------
 #set your wd here, MAKE SURE ITS SET TO YOUR PROJECT DATA BASE IN SESSION DROPDOWN MENU ABOVE
-wd <- "C:/Users/Rowen/OneDrive/Desktop/github/CCFS-Sea-Lice-database/Code"
-#wd <- getwd()  # working directory
+wd <- getwd()  # working directory
 setwd(wd)
 folders <- c("Code", "Data", "OutputFigures", "OutputData")
 
@@ -100,6 +99,10 @@ forplots2020.path <- paste(wd, "/", "Data", sep = "")
 forplots2020 <- read.csv(paste(forplots2020.path, "/", "forplots2020.csv",
                         sep = ""), stringsAsFactors = FALSE)
 
+# I couldn't get this wd to work on the second try. So I have made my own here
+wd <- "C:/Users/Rowen/OneDrive/Desktop/github/CCFS-Sea-Lice-database/Data"
+setwd(wd)
+forplots2020 <- read.csv("forplots2020.csv")
 
 #View(forplots2020)
 
@@ -133,7 +136,15 @@ warnings()
 
 #************************ 
 #change the year if necessary
-data2020<-subset(forplots2020, year == "2020")
+# RM : I am changing the instances of "2020" so that we can just put the vector "yr" instead which we will define here, at the beginning
+yr <- "2020"
+data2020<-subset(forplots2020, year == yr)
+
+# RM : I think it might be worthwhile defining the list of sites you want to include 
+# in the study, here. But you might need to go through the code to replace the various
+# site lists with this vector. And make sure that this vector is defined appropriately so that you can automate it.
+# something like ...
+# site.list <- unique(data2020$location)
 
 #You may want to remove pink from the analysis. There aren't many of them in the data.
 best2020<-data.frame(subset(data2020, species == "coho"|species == "chum"|species == "chinook"|
@@ -261,7 +272,7 @@ alltab<-aggregate(Sum_all_lice~groupedsites, data = best2020, sum)
 licetable<-data.frame(Motlicetab, Coplicetab[2], Challicetab[2], alltab[2], Attlicetab[2])
 
 #view to make sense
-view(licetable)
+#view(licetable)
 #make sure to check that sums make sense
 
 #Last line in this chunk assembles the stages-tables to give the MEAN of all lice stages by groupedsites
@@ -323,8 +334,8 @@ write.csv(licetable,file.path(data.output.path,"totalsumslicetable.csv"))
  #                   "Tsapee Narrows","Bedwell Sound S", "Bedwell Est N", "Bedwell Middle"  )
 
 #2020 Update, change name in names.arg
-licesitenameedit <-c("Bedwell Sound North","North Meares", "Cypre River","Ritchie Bay","Tsapee Narrows")
-
+licesitenameedit <- as.list(print(meanlicetablewithtotalse[,1]))
+licecol<-c("dodgerblue","red","darkgreen","darkgray")
 #check if site names match
 meanlicetablewithtotalse$groupedsites
 meanlicetablewithtotalse <- na.omit(meanlicetablewithtotalse)
@@ -334,27 +345,30 @@ view(meanlicetablewithtotalse)
 #x#This plot requires code from farther down to be initiated properly, will not run
 #w/o objects futher down
 par(mar=c(10,5,4,2))
-barplot(t(meanlicetablewithtotalse, col = c("dodgerblue","red","darkgreen"), border="white", 
-        font.axis = 2, beside=T, legend=c(), font.lab=2, ylim = c(0,ceiling(max(meanlicetablewithtotalse))),
-        ylab = "Mean Lice per Fish",main = "Daily Mean Lice - Clayoquot Salmon 2020", names.arg = licesitenameedit, las = 2))
-#Below works to create a barplot. Need to add colours and a legend - RM
-barplot(as.matrix(meanlicetablewithtotalse[,2:6]), names = meanlicetablewithtotalse[,1], border="white", 
+#barplot(t(meanlicetablewithtotalse, col = c("dodgerblue","red","darkgreen"), border="white", 
+#        font.axis = 2, beside=T, legend=c(), font.lab=2, ylim = c(0,ceiling(max(meanlicetablewithtotalse))),
+#        ylab = "Mean Lice per Fish",main = "Daily Mean Lice - Clayoquot Salmon 2020", names.arg = licesitenameedit, las = 2))
+
+#Below works to create a barplot. - RM
+# The names argument changed so it didn't match with the mean lice table
+# The colours were standardized using licecol (moved above)
+# The barplot gives motile, copepodid, chalimus and all stages of lice. 
+barplot(t(as.matrix(meanlicetablewithtotalse[,c(2,4,5,6)])), names = meanlicetablewithtotalse[,1], col = licecol ,border="white", 
           font.axis = 2, beside=T, font.lab=2, ylim = c(0,ceiling(max(meanlicetablewithtotalse$Sum_all_lice))),
           ylab = "Mean Lice per Fish",main = "Daily Mean Lice - Clayoquot Salmon 2020", names.arg = licesitenameedit, las = 2)
 
 #abline(h= seq(0, ceiling(max(liceofmeanlicetable)), 1), col = "light gray")
 
-licecol<-c("darkgray","dodgerblue","red","darkgreen")
-legend("topright", cex=0.6, legend = c("Total Lice", "Motile", "Chalimus", "Copepodid"), col = licecol, title = "Lice Stage", lty = 1, lwd = 4)
+legend("topright", cex=0.6, legend = c("Motile", "Copepodid", "Chalimus", "All Stages"), col = licecol, title = "Lice Stage", lty = 1, lwd = 4)
 
-legend("topright", cex=0.6, legend = c("Motile", "Chalimus", "Copepodid"), col = c("dodgerblue","red","darkgreen"), title = "Lice Stage", lty = 1, lwd = 4)
-licestagelegend<-legend("topright", cex=0.6, legend = c("Total Lice", "Motile", "Chalimus", "Copepodid"), col = licecol, title = "Lice Stage", lty = 1, lwd = 4)
+#legend("topright", cex=0.6, legend = c("Motile", "Chalimus", "Copepodid"), col = c("dodgerblue","red","darkgreen"), title = "Lice Stage", lty = 1, lwd = 4)
+#licestagelegend<-legend("topright", cex=0.6, legend = c("Total Lice", "Motile", "Chalimus", "Copepodid"), col = licecol, title = "Lice Stage", lty = 1, lwd = 4)
 
 
 # Resuming ~VECTOR CREATION~
 
 ##JULIAN DATES
-View(best2020)
+
 #making a table with weekly intervals.
 juliandates<-julian(best2020$date)
 firstday<-min(juliandates)
@@ -452,7 +466,8 @@ write.csv(meandatetable,file.path(data.output.path,"mean.lice.and.forklength.by.
 #daily forklength for all species.
 #begin with setting the path for the figure to be saved to: figures.path
 jpeg(filename = "OutputFigures/DailyForkLength2020.jpg")
-#note, if you are trying to adjust asthetics, you will have take off the above save code to see the plots. When jpeg is open, you won't see you plot untill you use dev.off to save it to the specified location.
+#note, if you are trying to adjust aesthetics, you will have take off the above save code to see the plots. When jpeg is open, you won't see you plot untill you use dev.off to save it to the specified location.
+# Can I recommend putting this at the bottom of the plot so you can see it being created before the file is made? - RM
 
 #begin plot, set ranges by looking at max/ min values from mean table
 yrangefl<-0:95
@@ -489,6 +504,7 @@ listspeciesinterest<-c("Chum", "Coho", "Chinook")
 legend("topright", legend = listspeciesinterest, col = c("dodgerblue", "black","red"), cex = 1, lwd = 1, title = "Species", lty = c(1,2,3))
 
 #save current plot pane as jpeg, trying to automate this but it may require ggplot, so we'll hold off for now. use def.off at the end of all plots to save to figures path
+# RM : if you want to see the plot as it is being created : jpeg(filename = "OutputFigures/DailyForkLength2020.jpg")
 dev.off()
 
 #May want to put 2018 on there too in diff colour. 
@@ -526,7 +542,8 @@ dev.off()
 #********************
 unique(best2020$species)
 
-#Can change the list to include sockeye and/or pink. 
+#Can change the list to include sockeye and/or pink.
+# RM: Have you considered putting these kind of vectorised variables at the beginning? 
 listspeciesinterest<-c("chum", "coho", "chinook")
 
 meanflfish<-rep(0, times = length(weeklyintervals)*length(listspeciesinterest))
@@ -534,7 +551,6 @@ sdflfish<-rep(0, times = length(weeklyintervals)*length(listspeciesinterest))
 speciesinterest<-rep(c("chum", "coho", "chinook"), each = length(weeklyintervals))
 
 for (i in 1:length(listspeciesinterest)) {
-  View(best2020)
   fishbest2020<-subset(best2020, species == listspeciesinterest[i])
   weeklyfl<-subset(fishbest2020, fishbest2020$j.date <= weeklyintervals[1])
   #**********************
@@ -585,9 +601,8 @@ meanflfish<-as.numeric(as.character(meanflfish))
 meanflfish <- as.numeric(as.character(meanflfish))
 
 ######RUN THIS AFTER NEXT CHUNK OF CODE TO MAKE WORK, chunk starting with speciesintrest
-weeklyfl$meanflfish<-as.numeric(as.character(weeklyfl$meanflfish))
-
-view(weeklyfl$meanflfish)
+# RM : I am going to put this line beneath the speciesinterest code.
+#weeklyfl$meanflfish<-as.numeric(as.character(weeklyfl$meanflfish))
 
 speciesinterest<-rep(c("chum", "coho", "chinook"), each = length(weeklyintervals))
 weeklyfl<-data.frame(cbind(speciesinterest, meanflfish, sdflfish))
@@ -599,6 +614,9 @@ chinfl1<-subset(weeklyfl, speciesinterest == "chinook")
 chinfl<-cbind(chinfl1,weeklyintervals)
 weeklyfl$intervals<-rep(weeklyintervals, times = 3)
 #names(weeklyfl)[2]<-paste("meanfl")
+
+weeklyfl$meanflfish<-as.numeric(as.character(weeklyfl$meanflfish))
+
 
 ### Below, make chum into coho, or different species of interest, for lines of that species mean, weekly forklength 
 # to plot lines for diffe species, use find and replace function, replace species nick names (chin = chinook) and then add a line to the plot
@@ -636,8 +654,7 @@ plotchumfl$weeklyintervals<-as.Date(plotchumfl$weeklyintervals, format = "%b %d 
 #chinNan<-as.numeric(as.character(subset(chinfl, meanflfish == "NaN")))
 #chinflmeanpresent<-chinfl[-chinNan,2]
 #chinfl[chinflmeanpresent]
-View(best2020)
-max(best2020$length)
+
 #set range for axes
 yrangefl<-seq(30, 120, length.out = length(weeklyintervals))
 
@@ -868,7 +885,8 @@ prevsiteday <- data.frame(date = numeric(0),
                           copeprev = numeric(0))
 
 #x# this line wont run, counts object does not exist. Refering to salmocounts?
-prevsiteday$date <- as.Date(counts$date, levels=weeklyintervals, origin=as.Date("1970-01-01"), format = "%b %d %y")  # Make sure months are ordered correctly for future plotting
+# RM : I think this is just formatting the dates for the plots by weeklyintervals. So we can apply it when/if necessary as long as we provide dates that match the data to be plotted.
+#prevsiteday$date <- as.Date(counts$date, levels=weeklyintervals, origin=as.Date("1970-01-01"), format = "%b %d %y")  # Make sure months are ordered correctly for future plotting
 
 #how to store the data in forloops
 #prevsiteweek[i,1] <- date.name[i]
@@ -878,6 +896,10 @@ prevsiteday$date <- as.Date(counts$date, levels=weeklyintervals, origin=as.Date(
 #Just doing a for loops for each location.
 
 nloop<-length(listofsites)
+
+#RM : trying to make the legend appear outside the plot so it doesn't get overlapped by data
+par(mar=c(5.1, 4.1, 4.1, 8.1), xpd=TRUE)
+
 for (i in 1:nloop) {
   par(mfrow=c(1,1))
   site3<-subset(best2020, groupedsites == listofsites[i]) 
@@ -944,8 +966,12 @@ for (i in 1:nloop) {
   loops1yrange.dp<-range(forprevyrange)
   coloursloop<-c("black","red","blue3","forestgreen")
   
-  plot(siteagg3$total.prevalence~siteagg3$Group.date, xlim = loop1xrange.dp, ylim = loops1yrange.dp, type="n", xlab = "Date", ylab = "Prevalence (infected fish/total fish)")
-  legend("topleft", cex=0.6, legend = prevalence.stage.legend, pch=plotchar, lty=linetype, title = "Louse Stages", col = coloursloop)
+    plot(siteagg3$total.prevalence~siteagg3$Group.date, xlim = loop1xrange.dp, ylim = loops1yrange.dp, type="n", xlab = "Date", ylab = "Prevalence (infected fish/total fish)") 
+  
+  # RM : if a site was only sampled once, the plot looks pretty silly. It shows 2000 - 2040 with data for one x value. 
+  #     We probably don't need to change these plots because seeing this data over time is uneccesary. They can just be discarded and the info can be seen in the barplot
+
+  legend("topright",inset=c(-0.2,0), cex=0.6, legend = prevalence.stage.legend, pch=plotchar, lty=linetype, title = "Louse Stages", col = coloursloop)
   title(main = listofsites[i])
   
   
@@ -957,7 +983,8 @@ for (i in 1:nloop) {
   prevsiteday<-rbind(prevsiteday, siteagg3)
   
 }
-
+# RM : The line below will make the legend come back into the plot panel.
+#par(xpd=FALSE)
 
 #Daily mean lice with stages
 datesforstages<-format(meandatetable$date, format = "%b %d %y")
@@ -972,8 +999,8 @@ barplot(t(groupedstagesdata), col= c("darkgray","dodgerblue","red","darkgreen") 
 #abline(h= seq(0, ceiling(max(groupedstagesdata)), 0.1), col = "light gray")
 
 
-licecol<-c("darkgray","dodgerblue","red","darkgreen")
-legend("topright", cex=0.6, legend = c("Total Lice", "Motile", "Chalimus", "Copepodid"), col = licecol, title = "Lice Stage", lty = 1, lwd = 4)
+licecol2<-c("darkgray","dodgerblue","red","darkgreen")
+legend("topright", cex=0.6, legend = c("Total Lice", "Motile", "Chalimus", "Copepodid"), col = licecol2, title = "Lice Stage", lty = 1, lwd = 4)
 
 
  
@@ -1045,7 +1072,6 @@ legend("topright", cex=0.6, legend = c("Total Lice", "Motile", "Chalimus", "Cope
 
 #bookmark
 #need to actually make sure that it is giving mean lice/fish because it looks like too drastic of a drop in mean lice to actually be real...
-View(best2020)
 
 ##ASSIGNING WEEKLY INTERVALS TO ALL THE dates in the best2020 data set 
 #weekly intervals.
@@ -1070,17 +1096,15 @@ for (i in 1:(length(JDweeklyintervalsloops)-1)) {
 tsaltemp <- read.csv("Data/clayoquot.site.data.csv", header=TRUE, stringsAsFactors=FALSE,
          fileEncoding="latin1")
 
+#RM : This is just my own wd workaround
+#tsaltemp <- read.csv("clayoquot.site.data.csv")
+
 ###NOTE there is no site data for Tsapee Narrows - ask Mack 11/22/2020
 
-#***********************
-#change year if applicable
-
-
-tsal2020 <- subset(tsaltemp, year == "2020")
+tsal2020 <- subset(tsaltemp, year == yr)
 
 #***********************
 #remove all the comments on the csv file
-unique(tsal2020$location)
 #making the separate day, month and year columns into date
 tsal2020$date <- as.Date(with(tsal2020, paste(year, month, day, sep="-")), "%Y-%m-%d")
 #setting up the new names for the locations. 
@@ -1089,7 +1113,6 @@ tsal2020$date <- as.Date(with(tsal2020, paste(year, month, day, sep="-")), "%Y-%
 #If you have changed the name of any sites, please change them here to match
 #the line of code below is used to lump sites together by naming them the same thing. 
 #Example, Bedwell River 3 and 2 are now called Bedwell Sound Middle
-unique(tsal2020$location)
 
 tsal2020$groupedsites<-tsal2020$location
 #levels(tsal2020$groupedsites)<-c(levels(tsal2020$groupedsites), c("Bedwell Sound South","Bedwell Sound North","Bedwell Sound Middle"))
@@ -1100,37 +1123,39 @@ tsal2020$groupedsites[tsal2020$groupedsites == "Bedwell River"]<- "Bedwell Sound
 #tsal2020$groupedsites[tsal2020$groupedsites == "Bedwell River 3"]<-"Bedwell Sound Middle"
 #tsal2020$groupedsites[tsal2020$groupedsites == "Sniffles"]<- "Bedwell Sound Middle"
 #tsal2020$groupedsites[tsal2020$groupedsites == "Sniffles 2"]<- "Bedwell Sound Middle"
-View(tsal2020$groupedsites)
-loctsal<-unique(tsal2020$groupedsites)
-print(loctsal)
-ritchieplottsal<-data.frame(meansurfsalt = numeric(0),
-                            meansalt1 = numeric(0),
-                            meantempsurf = numeric(0),
-                            meantemp1 = numeric(0))
-
-cypreplottsal<-data.frame(meansurfsalt = numeric(0),
-                            meansalt1 = numeric(0),
-                            meantempsurf = numeric(0),
-                            meantemp1 = numeric(0))
-
-bedwellplottsal<-data.frame(meansurfsalt = numeric(0),
-                            meansalt1 = numeric(0),
-                            meantempsurf = numeric(0),
-                            meantemp1 = numeric(0))
-
-mearesplottsal<-data.frame(meansurfsalt = numeric(0),
-                            meansalt1 = numeric(0),
-                            meantempsurf = numeric(0),
-                            meantemp1 = numeric(0))
-
+##*******************change the focus sites for the TS plots, if you like
+# RM : this code could be automated to paste the site name without spaces. Then you could call on these below.
+loctsal<-c("bedwellplottsal","mearesplottsal","cypreplottsal","ritchieplottsal")
+# RM : This is an example of where you might use a vector, defined once at the beginning, for listing focus sites for the study year
+tsalsites<-unique(tsal2020$groupedsites)
 tsal2020$salt_surf<-as.numeric(as.character(tsal2020$salt_surf))
 tsal2020$salt_1m<-as.numeric(as.character(tsal2020$salt_1m))
 tsal2020$temp_surf<-as.numeric(as.character(tsal2020$temp_surf))
 tsal2020$temp_1m<-as.numeric(as.character(tsal2020$temp_1m))
+tsal2020$date<-as.Date(tsal2020$date, origin ="%Y-%m-%d")
 
-##*******************change the focus sites for the TS plots, if you like
+# RM : I made this part a for loop
+#ritchieplottsal<-data.frame(meansurfsalt = numeric(0),
+                    #        meansalt1 = numeric(0),
+                    #        meantempsurf = numeric(0),
+                    #        meantemp1 = numeric(0))
 
-tsalsites<-c("Bedwell Sound North","North Meares","Cypre River","Ritchie Bay")
+#cypreplottsal<-data.frame(meansurfsalt = numeric(0),
+                     #       meansalt1 = numeric(0),
+                    #        meantempsurf = numeric(0),
+                    #        meantemp1 = numeric(0))
+
+#bedwellplottsal<-data.frame(meansurfsalt = numeric(0),
+                     #       meansalt1 = numeric(0),
+                    ##        meantempsurf = numeric(0),
+                      #      meantemp1 = numeric(0))
+
+#mearesplottsal<-data.frame(meansurfsalt = numeric(0),
+                       #     meansalt1 = numeric(0),
+                      #      meantempsurf = numeric(0),
+                      #      meantemp1 = numeric(0))
+
+
 
 ########Tables and plots of site data - Ritchie as example below
 #$%^&
@@ -1138,33 +1163,47 @@ tsalsites<-c("Bedwell Sound North","North Meares","Cypre River","Ritchie Bay")
 #for a table and plot of a site, change site you choose in tsalsites[#], if you like. You can
 #make a for loop to produce all the sites' plots and tables at once. I ran out of time
 #ex if you want Bedwell Sound north, you input 1 into tsalsites[]
+# RM : I made a for loop to help automate this part. The code below could also be automated and this loop could be better (see note at beginning of TS Plots)
 
-temptsal<-subset(tsal2020, groupedsites == tsalsites[4])
-temptsal$date<-as.Date(temptsal$date, origin ="%Y-%m-%d")
-datetsal<-as.Date(unique(temptsal$date), origin = "%Y-%m-%d")
+for (d in 1:length(tsalsites)) {
+  
+temptsal<-subset(tsal2020, groupedsites == tsalsites[d])
+
+datetsal <- as.Date(unique(temptsal$date), origin ="%Y-%m-%d")
+tsd.site<- data.frame(meansurfsalt = numeric(0),
+                           meansalt1 = numeric(0),
+                           meantempsurf = numeric(0),
+                           meantemp1 = numeric(0))
+
 
 #x# it looks like the objects being pulled from in this forloop are not returning any actual values, just NA's and 0's. I think it has to do with the plotsal df's, 
 #these issues seem to propogate into the plots below when tempdates is used
-
+# RM : I think the issue is that the length is based on the subset of data for one site, but is applied to all sites. I would recommend redoing this whole section as a forloop.
 for (j in 1:length(datetsal)) {
   #subsetting by the first date
   tempdates<-subset(temptsal, date == datetsal[j])  
   for (k in 1:4) {
     #taking the mean of the salinity/temp values for the one date
-    ritchieplottsal[j,k]<-mean(tempdates[,(5+k)])
-  }
-  {
-    cypreplotsal[j,k]<-mean(tempdates[,(5+k)])
-  }
-  {
-    mearesplottsal[j,k] <- mean(tempdates[, (5+k)])
-  }
+    tsd.site[j,k]<-mean(tempdates[,(6+k)])
+     }
+}
+site.ts <- rep(tsalsites[d], each = length(tsd.site$meantemp1))
+tsd.site1 <- cbind(site.ts, tsd.site)
+if(d == 1) {tsdframe <- as.data.frame(tsd.site1)
+} else if(d > 1 ){tsdframe <- as.data.frame(rbind(tsdframe, tsd.site1))}
 }
 
 
-ritchieplottsal<-data.frame(datetsal, ritchieplottsal)
-ritchieplottsal$datetsal<-as.Date(format(ritchieplottsal$datetsal, format = "%Y/%m/%d"))
+# RM : This should be a for loop.
+for(i in 1 : length(tsalsites)){
 
+    temptsal<-subset(tsal2020, groupedsites == tsalsites[i])
+      datetsal <- as.Date(unique(temptsal$date), origin ="%Y-%m-%d")
+      temp.d <- subset(tsdframe, site.ts == tsalsites[i])
+ritchieplottsal<-data.frame(datetsal, temp.d)
+ritchieplottsal$datetsal<-as.Date(format(ritchieplottsal$datetsal, format = "%Y/%m/%d"))
+#RM : note that the line below could omit more rows than you want if the row is Only missing surface salinity
+ritchieplottsal <- ritchieplottsal[!is.na(ritchieplottsal$meansurfsalt),]
 ritchieplottsal1 <- as.data.frame(ritchieplottsal) 
 ritchieplottsal1 <- ritchieplottsal1[, colSums(is.na(ritchieplottsal1)) < nrow(ritchieplottsal1)]
 
@@ -1174,16 +1213,14 @@ ritchieplottsal1 <- ritchieplottsal1[, colSums(is.na(ritchieplottsal1)) < nrow(r
 #ritchieplottsal1<-as.data.frame(na.omit(ritchieplottsal), stringsAsFactors=FALSE)  
 xrangets<-as.Date(format(range(ritchieplottsal1$datetsal), format = "%Y-%m-%d"))
 xts<-as.Date(format(ritchieplottsal1$datetsal, format = "%Y-%m-%d"))
-range(ritchieplottsal1$meansalt1)
-yrangets2<-c(5,35)
 
-par(mar = c(4,5,5,4))
+yrangets2<-c(10,30)
 
-par(new = FALSE)
+par(mar = c(5,5,5,5), xpd = F, new = F)
 
 plot(ritchieplottsal1$meansalt1~xts,  type = "n", 
      xlim = xrangets, ylim = yrangets2, ylab = "Salinity (psu)",
-     cex.lab = 1.5, cex.axis = 1.5, xlab = "", main = "Temp Salinity Ritchie Bay, 2020", cex.main = 2)
+     cex.lab = 1.5, cex.axis = 1.5, xlab = "", main = paste("Temp Salinity", tsalsites[i], year, sep = " "), cex.main = 2)
 
 lines(ritchieplottsal1$meansalt1~xts,
       type = "b", lwd = 2, lty = 1, col = "darkgray") 
@@ -1191,13 +1228,12 @@ lines(ritchieplottsal1$meansurfsalt~xts,
       type = "b", lwd = 2, lty = 2, col = "dodgerblue") 
 
 legend("bottomright", legend = c("Sal 0 m", "Sal 1 m", "Temp 0 m", "Temp 1 m"),
-       col = c("dodgerblue", "lightgray", "navyblue", "gray44"), cex = 1.5,box.lwd = "o",
+       col = c("dodgerblue", "lightgray", "navyblue", "gray44"), cex = 1.5,bty = "n",
        lwd = 1.75, title = "Depth", lty = c(2,1), pch = 1)
 
 par(new = TRUE)
 
-yrangets3<-c(8,16)
-
+yrangets3<-c(5,20)
 
 plot(ritchieplottsal1$meantemp1~xts,  type = "n", axes = FALSE,
      xlim = xrangets, ylim = yrangets3, ylab = "",
@@ -1212,10 +1248,20 @@ mtext(side = 4, "Temperature (C)", line = 2.5, cex = 1.5)
 
 #x# it looks like there is no temperature or salinity variation for any of these
 #sampling dates. This is not correct.
+write.csv(ritchieplottsal1, paste("meanTS.",tsalsites[i], sep ="_"))
 
-write.csv(ritchieplottsal1, paste("meanTS.",unique(temptsal$groupedsites)))
-
+pdf(paste(tsalsites[i], year,"TS.pdf" , sep='_'),5,5)
 dev.off()
+
+}
+
+
+
+
+#RM : you shouldn't need the code between these hashtags
+
+#######################################################################################
+
 #####Cypre
 
 temptsal<-subset(tsal2020, groupedsites == tsalsites[2])
@@ -1267,7 +1313,7 @@ lines(cypreplottsal1$meansurfsalt~xts,
       type = "b", lwd = 2, lty = 2, col = "dodgerblue") 
 
 legend("bottomright", legend = c("Sal 0 m", "Sal 1 m", "Temp 0 m", "Temp 1 m"),
-       col = c("dodgerblue", "lightgray", "navyblue", "gray44"), cex = 1.5,box.lwd = "o",
+       col = c("dodgerblue", "lightgray", "navyblue", "gray44"), cex = 1.5,bty = "n",
        lwd = 1.75, title = "Depth", lty = c(2,1), pch = 1)
 
 par(new = TRUE)
@@ -1336,7 +1382,7 @@ lines(mearesplottsal1$meansurfsalt~xts,
       type = "b", lwd = 2, lty = 2, col = "dodgerblue") 
 
 legend("bottomright", legend = c("Sal 0 m", "Sal 1 m", "Temp 0 m", "Temp 1 m"),
-       col = c("dodgerblue", "lightgray", "navyblue", "gray44"), cex = 1.5,box.lwd = "o",
+       col = c("dodgerblue", "lightgray", "navyblue", "gray44"), cex = 1.5,bty = "n",
        lwd = 1.75, title = "Depth", lty = c(2,1), pch = 1)
 
 par(new = TRUE)
@@ -1353,6 +1399,14 @@ lines(mearesplottsal1$meantempsurf~xts,
       type = "b", lwd = 2, lty = 2, col = " navyblue") 
 axis(4, ylim = yrangets3, cex.lab=1.5,cex.axis=1.5)
 mtext(side = 4, "Temperature (C)", line = 2.5, cex = 1.5)
+
+# RM : you shouldn't need the code between this hash line and the one above.
+#######################################################################################
+
+
+
+
+
 
 
 # PREVALENCE Ab
@@ -1408,15 +1462,37 @@ sdcols<-  data.frame(
   sdchal = as.numeric(0),
   sdmot = as.numeric(0)) 
 
-#Getting SD.
-for (j in 1:length(unique(site3$date))) {
+# SD for prevalence
+# RM : you can't get SD for the prevalence associated with one date unless you find sd for each site used in the prevalence-by-date. So we shan't provide it.
+# RM : If you really want to, I think this for loop gives it. But it makes the bars very large for June 12
+for (j in 1:length(datelistsdp)) {
   date3<-subset(site3, date == datelistsdp[j])
-  for (k in 1:4) {
+  date33 <- as.data.frame(cbind(date3$location, date3$Sum_all_lice, date3$copsum, date3$chalsum, date3$motsum, date3$countcol ))
+  loctp <- unique(date33$location)
+  #more than 1 location
+  if(length(unique(date33$location)) > 1){
+  
+    #prevalence for each location
+    for (a in 1:length(unique(date33$location))) {
+    prev.t <- subset(date33, location == loctp[a])
     
-    sdcols[j,k]<-(sd(date3[,50+k]))/sum(date3$countcol)
+        # Create a list of prevalences from which to get their sd. 
+        for (p in 1:4) {
+         for (r in 1:nrow(prev.t))
+           if(prev.t[r,(p+1)] >=1) {prev.t[r,(p+1)] <- 1}          
+           l.p <- sum(prev.t[,(p+1)])/sum(prev.t$countcol) 
   }
-}
-
+    #bind the rows for each site's prevalence into data frame
+    if (a == 1){pre.s <- l.p}
+    if (a >1 ) {pre.s <- as.data.frame(rbind(pre.s,lp))}    
+    
+  }
+    #sd for prevalences at all sites
+    for (k in 1:4) {
+        sdcols[j,k]<-sd(pre.s[k])
+  }
+  } else if(length(unique(date3$location)) == 1) {sdcols[j,k] <- 0}
+  }
 
 # now just need to aggregate using date.
 siteagg3<-aggregate(x = site3[c("infected", "countcol", "copinf", "chalinf", "motinf")], FUN = sum, by = list(Group.date = site3$date))
@@ -1432,11 +1508,12 @@ names(siteagg3)[3]<-paste("total.fish")
 #changing header names
 names(siteagg3)[2]<-paste("total.infected.fish")
 
-#calculating prevalence for sites
+#calculating prevalence for dates
 siteagg3$copprev<-siteagg3$copinf/siteagg3$total.fish
 siteagg3$chalprev<-siteagg3$chalinf/siteagg3$total.fish
 siteagg3$motprev<-siteagg3$motinf/siteagg3$total.fish
 siteagg3$totalprevalence<-siteagg3$total.infected.fish/siteagg3$total.fish
+
 
 
 #can change ranges to match the subset
@@ -1493,10 +1570,10 @@ prevoverlim<-as.Date(drange, format = "%Y-%m-%d")
 overallprev$JDweeklyintervalsloops..1.<-as.Date( overallprev$JDweeklyintervalsloops..1., format = "%b %d %Y")
 
 #  legend("topleft", cex=0.6, legend = prevalence.stage.legend, pch=plotchar, lty=linetype, title = "Louse Stages", col = coloursloop)
-prevxx<-plot(overallprev$totp~overallprev$weekly, yaxt="n", xlim = prevoverlim, ylim =  c(0,1.0), type="n", ylab = "Prevalence (infected fish/total fish)", cex.lab = 1.5, cex.axis = 1.5)
+prevxx<-plot(overallprev$totp~overallprev$weekly, yaxt="n", xlim = prevoverlim, ylim =  c(0,1.0), type="n", ylab = "Prevalence (infected fish/total fish)", cex.lab = 1.5, cex.axis = 1.5, xlab = "Date")
 
-legend("topleft", box.lwd = "o", col = c("darkgreen","dodgerblue","red","darkgray"), title = "Louse Stages", lwd = 1.5, cex = 1, pch=1, lty=linetype, legend = c("Copepodid", "Chalimus", "Motile", "All"))
-axis(side = 2, at = seq(0 , 1.0 , 0.2), las = 1, cex.label = 1.5, cex.axis = 1.5)
+legend("topleft", bty = "n", col = c("darkgreen","dodgerblue","red","darkgray"), title = "Louse Stages", lwd = 1.5, cex = 1, pch=1, lty=linetype, legend = c("Copepodid", "Chalimus", "Motile", "All"))
+axis(side = 2, at = seq(0 , 1.0 , 0.2), las = 1, cex.lab = 1.5, cex.axis = 1.5)
 title(main = "Clayoquot", cex.main = 2)
 
 segp<-overallprev$weekly
@@ -1512,26 +1589,28 @@ copeysegu<-(overallprev$copep+overallprev$sdcope)
 chalysegu<-(overallprev$chalp+overallprev$sdchal)
 motysegu<-(overallprev$motp+overallprev$sdmot)
 
-
+# RM : the sd has been removed from this plot because you can't take sd from one data point. Which is the prevalence for each date.
+#       I have provided SD calculated from the prevalences of each site specific to the date (above for loop)
+#       But I don't think the sd is very strong for one (only a couple of sites or just 1), and it provides very large values for june 12.
 lines(overallprev$weekly, overallprev$totp, lty=1, pch=1, lwd = 1.5, type ="b", col = "darkgray")
-segments(x0 = segp, totysegl, x1 =segp, totysegu, lwd = 2, col = "darkgray")  # confidence intervals
-arrows(x0 = segp, totysegl, x1 =segp, totysegu, lwd = 1, angle = 90,
-       code = 3, length = 0.05, col = "darkgray")
+#segments(x0 = segp, totysegl, x1 =segp, totysegu, lwd = 2, col = "darkgray")  # confidence intervals
+#arrows(x0 = segp, totysegl, x1 =segp, totysegu, lwd = 1, angle = 90,
+#       code = 3, length = 0.05, col = "darkgray")
 
 lines(overallprev$weekly, overallprev$copep, lty=linetype[2], pch=1, lwd = 1.5, type ="b", col = "darkgreen" )
-segments(x0 = segp, copeysegl, x1 = segp, copeysegu, lwd = 2, col = "darkgreen")  # confidence intervals
-arrows(x0 = segp, copeysegl, x1 = segp, copeysegu, lwd = 1, angle = 90,
-       code = 3, length = 0.05, col = "darkgreen")
+#segments(x0 = segp, copeysegl, x1 = segp, copeysegu, lwd = 2, col = "darkgreen")  # confidence intervals
+#arrows(x0 = segp, copeysegl, x1 = segp, copeysegu, lwd = 1, angle = 90,
+#       code = 3, length = 0.05, col = "darkgreen")
 
 lines(overallprev$weekly, overallprev$chalp, lty=linetype[3], pch=1, lwd = 1.5, type ="b", col = "dodgerblue" )
-segments(x0 = segp, y0 = chalysegl, x1 = segp, y1 = chalysegu, lwd = 2, col = "dodgerblue")  # confidence intervals
-arrows(x0 = segp, chalysegl, x1 = segp, chalysegu, lwd = 1, angle = 90,
-       code = 3, length = 0.05, col = "dodgerblue")
+#segments(x0 = segp, y0 = chalysegl, x1 = segp, y1 = chalysegu, lwd = 2, col = "dodgerblue")  # confidence intervals
+#arrows(x0 = segp, chalysegl, x1 = segp, chalysegu, lwd = 1, angle = 90,
+#       code = 3, length = 0.05, col = "dodgerblue")
 #x# return to fix missing values or NA's
 lines(overallprev$weekly, overallprev$motp, lty=linetype[4], pch=1, lwd = 1.5, type ="b", col = "red" )
-segments(x0 = segp, y0 = motysegl, x1 = segp, y1 = motysegu, lwd = 2, col = "red" )  # confidence intervals
-arrows(x0 = segp, motysegl, x1 = segp, motysegu, lwd = 1, angle = 90,col = "red" ,
-       code = 3, length = 0.05)
+#segments(x0 = segp, y0 = motysegl, x1 = segp, y1 = motysegu, lwd = 2, col = "red" )  # confidence intervals
+#arrows(x0 = segp, motysegl, x1 = segp, motysegu, lwd = 1, angle = 90,col = "red" ,
+#       code = 3, length = 0.05)
 
 
 
@@ -1542,12 +1621,6 @@ arrows(x0 = segp, motysegl, x1 = segp, motysegu, lwd = 1, angle = 90,col = "red"
 #best2020$weeklyintvl[prevweekly]<-intvladd
 
 
-
-
-names(overallprev)
-names(ddprevweek)
-
-
 write.csv(overallprev[,-9], "OutputData/Clayoquot.weekly.mean.prevalence.2020.csv")
 
 #saves the plot
@@ -1555,13 +1628,25 @@ write.csv(overallprev[,-9], "OutputData/Clayoquot.weekly.mean.prevalence.2020.cs
 dev.copy(png,'OutputFigures/Clayoquot.weekly.mean.prevalence.2020.png')
 dev.off()
 
-#A for loops for specific sites. 
+
+
+#A for loops for Prevalence at specific sites. 
 #*******************
 #Change the names in the focussitelist if they do in fact change :)
-for (i in 1:length(focussitelist))
-{
+
+salmonlicebest2020<-subset(nobedwell, species == "chum" | species == "coho" | species == "chinook"| species == "sockeye" |species == "salmon")
+weeksitelice<-data.frame(salmonlicebest2020$date, salmonlicebest2020$j.date, salmonlicebest2020$weeklyintvl ,salmonlicebest2020$groupedsites,  
+                         salmonlicebest2020$copsum, salmonlicebest2020$chalsum, salmonlicebest2020$motsum, salmonlicebest2020$Sum_all_lice)
+names(weeksitelice)<-paste(c("date", "j.date", "weeklyintvl", "groupedsites", "copsum", "chalsum", "motsum", "Sum_all_lice"))
+#%%%%
+#*********************
+#to add a site to the focussitelist, add | groupedsites == "desired site" to the code below for vector focusweeksitelice
+focusweeksitelice<-subset(weeksitelice, groupedsites == "Cypre River" | groupedsites == "Ritchie Bay" | groupedsites == "North Meares" | groupedsites == "Bedwell Sound North")
+focussitelist<- unique(focusweeksitelice$groupedsites)
+
+for (i in 1:length(focussitelist)){
   
-  site3<-subset(nobedwell, groupedsites == focussitelist[4])
+  site3<-subset(nobedwell, groupedsites == focussitelist[i])
   #this gives you an individual site to work with.
   
   site3$countcol <- rep(1,nrow(site3))
@@ -1593,16 +1678,20 @@ for (i in 1:length(focussitelist))
     sdchal = as.numeric(0),
     sdmot = as.numeric(0)) 
   
-  #Getting SD.
-  for (j in 1:length(unique(site3$date))) {
-    date3<-subset(site3, date == datelistsdp[j])
-    for (k in 1:4) {
-      
-      sdcols[j,k]<-(sd(date3[,50+k]))/sum(date3$countcol)
-    }
-  }
+  # RM : I don't think this is correct. I don't think you can get sd from one date. 
+  # The prevalence is calculated from one date. So you need multiple prevalences to make sd, 
+  # but you then would have only 1 sd for prevalence by date.
+
+    #Getting SD.
+ # for (j in 1:length(unique(site3$date))) {
+  #  date3<-subset(site3, date == datelistsdp[j])
+  # for (k in 1:4) {
+  #    
+  #    sdcols[j,k]<-(sd(date3[,50+k]))/sum(date3$countcol)
+  #  }
+  #}
   
-  
+
   # now just need to aggregate using date.
   siteagg3<-aggregate(x = site3[c("infected", "countcol", "copinf", "chalinf", "motinf")], FUN = sum, by = list(Group.date = site3$date))
   #shows you how many were infected for each date that the specific site was sampled
@@ -1673,14 +1762,16 @@ for (i in 1:length(focussitelist))
   prevoverlim<-as.Date(drange, format = "%Y-%m-%d")
   overallprev$JDweeklyintervalsloops..1.<-as.Date( overallprev$JDweeklyintervalsloops..1., format = "%b %d %Y")
   
-  #  legend("topleft", cex=0.6, legend = prevalence.stage.legend, pch=plotchar, lty=linetype, title = "Louse Stages", col = coloursloop)
-  prevxx<-plot(overallprev$totp~overallprev$weekly, yaxt="n", xlim = prevoverlim, ylim =  c(0,1.0), type="n", ylab = "Prevalence (infected fish/total fish)", cex.lab = 1.5, cex.axis = 1.5)
-  
-  legend("topleft", box.lwd = "o", col = c("darkgreen","dodgerblue","red","darkgray"), title = "Louse Stages", lwd = 1.5, cex = 1, pch=1, lty=linetype, legend = c("Copepodid", "Chalimus", "Motile", "All"))
-  axis(side = 2, at = seq(0 , 1.0 , 0.2), las = 1, cex.label = 1.5, cex.axis = 1.5)
+  #RM : this par should probably be called earlier to apply to all plots.
+  par(mar = c(5,5,5,8), xpd = TRUE, cex.lab = 1.5, cex.axis = 1.5, cex.main = 2)
+  prevxx<-plot(overallprev$totp~overallprev$weekly, yaxt="n", xlim = prevoverlim, ylim =  c(0,1.0), type="n", ylab = "Prevalence (infected fish/total fish)", xlab = "Date")
+  # RM : The inset is used to make the legend appear in the margin, but it may need to
+  #     be tweaked, or your plot pane in Rstudio may need to be widened when making the plot
+  legend("topright", inset=c(-0.2,0), col = c("darkgreen","dodgerblue","red","darkgray"), legend = c("Copepodid", "Chalimus", "Motile", "All"), bty = "n",title = "Louse Stages", lwd = 1.5, cex = 1, pch=1, lty=linetype)
+  axis(side = 2, at = seq(0 , 1.0 , 0.2), las = 1)
   #**************** 
   #change title if needed
-  title(main = paste(focussitelist[4],"Prevalence, 2020"), cex.main = 2)
+  title(main = paste(focussitelist[i],"Prevalence, 2020"))
   
   segp<-overallprev$weekly
   
@@ -1695,36 +1786,40 @@ for (i in 1:length(focussitelist))
   chalysegu<-(overallprev$chalp+overallprev$sdchal)
   motysegu<-(overallprev$motp+overallprev$sdmot)
   
-  
+# RM: i do not think we can get sd for these prevalences. Only sd for prevalence by site, but this is plotted by date for 1 site.  
   lines(overallprev$weekly, overallprev$totp, lty=1, pch=1, lwd = 1.5, type ="b", col = "darkgray")
-  segments(x0 = segp, totysegl, x1 =segp, totysegu, lwd = 2, col = "darkgray")  # confidence intervals
-  arrows(x0 = segp, totysegl, x1 =segp, totysegu, lwd = 1, angle = 90,
-         code = 3, length = 0.05, col = "darkgray")
+ # segments(x0 = segp, totysegl, x1 =segp, totysegu, lwd = 2, col = "darkgray")  # confidence intervals
+#  arrows(x0 = segp, totysegl, x1 =segp, totysegu, lwd = 1, angle = 90,
+#         code = 3, length = 0.05, col = "darkgray")
   
   lines(overallprev$weekly, overallprev$copep, lty=linetype[2], pch=1, lwd = 1.5, type ="b", col = "darkgreen" )
-  segments(x0 = segp, copeysegl, x1 = segp, copeysegu, lwd = 2, col = "darkgreen")  # confidence intervals
-  arrows(x0 = segp, copeysegl, x1 = segp, copeysegu, lwd = 1, angle = 90,
-         code = 3, length = 0.05, col = "darkgreen")
+ # segments(x0 = segp, copeysegl, x1 = segp, copeysegu, lwd = 2, col = "darkgreen")  # confidence intervals
+#  arrows(x0 = segp, copeysegl, x1 = segp, copeysegu, lwd = 1, angle = 90,
+#         code = 3, length = 0.05, col = "darkgreen")
   
   lines(overallprev$weekly, overallprev$chalp, lty=linetype[3], pch=1, lwd = 1.5, type ="b", col = "dodgerblue" )
-  segments(x0 = segp, y0 = chalysegl, x1 = segp, y1 = chalysegu, lwd = 2, col = "dodgerblue")  # confidence intervals
-  arrows(x0 = segp, chalysegl, x1 = segp, chalysegu, lwd = 1, angle = 90,
-         code = 3, length = 0.05, col = "dodgerblue")
+#  segments(x0 = segp, y0 = chalysegl, x1 = segp, y1 = chalysegu, lwd = 2, col = "dodgerblue")  # confidence intervals
+#  arrows(x0 = segp, chalysegl, x1 = segp, chalysegu, lwd = 1, angle = 90,
+#         code = 3, length = 0.05, col = "dodgerblue")
   
   lines(overallprev$weekly, overallprev$motp, lty=linetype[4], pch=1, lwd = 1.5, type ="b", col = "red" )
-  segments(x0 = segp, y0 = motysegl, x1 = segp, y1 = motysegu, lwd = 2, col = "red" )  # confidence intervals
-  arrows(x0 = segp, motysegl, x1 = segp, motysegu, lwd = 1, angle = 90,col = "red" ,
-         code = 3, length = 0.05)
+#  segments(x0 = segp, y0 = motysegl, x1 = segp, y1 = motysegu, lwd = 2, col = "red" )  # confidence intervals
+#  arrows(x0 = segp, motysegl, x1 = segp, motysegu, lwd = 1, angle = 90,col = "red" ,
+#         code = 3, length = 0.05)
   
   
   #saves the plot
-  dev.copy(png,'OutputFigures/Clayoquot.weekly.mean.prevalence.2020.png',paste(focussitelist[i]))
-  dev.off()
+  # RM : The dev.copy is the only error remaining. As I don't fully understand how the directories work between github and R, I will leave it with you :) 
+  #dev.copy(png,'OutputFigures/Clayoquot.weekly.mean.prevalence.2020.png',paste(focussitelist[i]))
+  #dev.off()
   #tables of data for each site
-  write.csv(overallprev[,-9], paste(focussitelist[1],"OutputData/weekly.mean.prevalence.2020"))
+#  write.csv(overallprev[,-9], paste(focussitelist[i],"OutputData/weekly.mean.prevalence.2020"))
   
 }
 
+
+
+# RM : This could probably be made into a much smaller for loop and automated by defining which sites you wish to see abundance for.
 #MEAN ABUNDANCE Aa
 #Mean Abundance 2019
 #making the mean lice over time with sites.
@@ -1760,12 +1855,13 @@ names(weeksitelice)<-paste(c("date", "j.date", "weeklyintvl", "groupedsites", "c
 focusweeksitelice<-subset(weeksitelice, groupedsites == "Cypre River" | groupedsites == "Ritchie Bay" | groupedsites == "North Meares" | groupedsites == "Bedwell Sound North")
 focussitelist<- unique(focusweeksitelice$groupedsites)
 
-rowcounts <- data.frame(weeklyintvl = numeric(0),
-                        site = numeric(0),
-                        mean = numeric(0),
-                        lci = numeric(0),
-                        uci = numeric(0))
-rowcounts$site <- factor(counts$site, levels=focussitelist)  
+# RM : This isn't actually used anywhere else, so we can forget about it and the error below
+#rowcounts <- data.frame(weeklyintvl = numeric(0),
+#                        site = numeric(0),
+#                        mean = numeric(0),
+#                        lci = numeric(0),
+#                        uci = numeric(0))
+#rowcounts$site <- factor(focusweeksitelice$groupedsites, levels=focussitelist)  
 
 lci<- NULL
 uci <- NULL
@@ -1973,7 +2069,7 @@ segments( x0 = mp, t(allsdplneg), x1 = mp, t(allsdpu), lwd = 1)  # confidence in
 arrows(x0 = mp, t(allsdplneg), x1 = mp, t(allsdpu), lwd = 0.75, angle = 90,
        code = 3, length = 0.05)
 
-legend("topleft", box.lwd = "o", col = c("darkgreen","dodgerblue","red","darkgray"), lwd = 3, cex = 1, legend = c("Copepodid", "Chalimus", "Motile", "Total"))
+legend("topleft", bty = "n", col = c("darkgreen","dodgerblue","red","darkgray"), lwd = 3, cex = 1, legend = c("Copepodid", "Chalimus", "Motile", "Total"))
 axis(side = 2, at = seq(from=0, to=33, by=3), las = 1)
 
 dev.copy(png,'OutputFigures/ClayoquotMeanLiceAbundancePerFish_2020.png')
@@ -2020,7 +2116,7 @@ segments( x0 = mp, t(cypresdplneg), x1 = mp, t(cypresdpu), lwd = 1)  # confidenc
 arrows(x0 = mp, t(cypresdplneg), x1 = mp, t(cypresdpu), lwd = 0.75, angle = 90,
        code = 3, length = 0.05)
 
-legend("topleft", box.lwd = "o", col = c("darkgreen","dodgerblue","red","darkgray"), lwd = 3, cex = 1, legend = c("Copepodid", "Chalimus", "Motile", "Total"))
+legend("topleft", bty = "n", col = c("darkgreen","dodgerblue","red","darkgray"), lwd = 3, cex = 1, legend = c("Copepodid", "Chalimus", "Motile", "Total"))
 axis(side = 2, at = seq(from=0, to=40, by=5), las = 1)
 
 
@@ -2070,7 +2166,7 @@ segments( x0 = mp, t(ritchiesdplneg), x1 = mp, t(ritchiesdpu), lwd = 1)  # confi
 arrows(x0 = mp, t(ritchiesdplneg), x1 = mp, t(ritchiesdpu), lwd = 0.75, angle = 90,
        code = 3, length = 0.05)
 
-legend("topleft", box.lwd = "o", col = c("darkgreen","dodgerblue","red","darkgray"), lwd = 3, cex = 1, legend = c("Copepodid", "Chalimus", "Motile", "Total"))
+legend("topleft", bty = "n", col = c("darkgreen","dodgerblue","red","darkgray"), lwd = 3, cex = 1, legend = c("Copepodid", "Chalimus", "Motile", "Total"))
 axis(side = 2, at = seq(from=0, to=26, by=2), las = 1)
 
 
@@ -2119,7 +2215,7 @@ segments( x0 = mp, t(mearessdplneg), x1 = mp, t(mearessdpu), lwd = 1)  # confide
 arrows(x0 = mp, t(mearessdplneg), x1 = mp, t(mearessdpu), lwd = 0.75, angle = 90,
        code = 3, length = 0.05)
 
-legend("topleft", box.lwd = "o", col = c("darkgreen","dodgerblue","red","darkgray"), lwd = 3, cex = 1, legend = c("Copepodid", "Chalimus", "Motile", "Total"))
+legend("topleft", bty = "n", col = c("darkgreen","dodgerblue","red","darkgray"), lwd = 3, cex = 1, legend = c("Copepodid", "Chalimus", "Motile", "Total"))
 axis(side = 2, at = seq(from=0, to=10, by=2), las = 1)
 
 
@@ -2158,6 +2254,7 @@ mtext("Count", side = 2, line = 2.4)
 
 ####################
 
+# RM so no weeklyliceloctable... I suggest just making your own from scratch-ola if the data it would present is not to be found above.
 weeklycopf<-subset(weeklyliceloctable, assignstage == "copepodid")
 weeklychalf<-subset(weeklyliceloctable, assignstage == "chalimus")
 weeklymotilef<-subset(weeklyliceloctable, assignstage == "motile")
@@ -2187,7 +2284,7 @@ weektablef<-as.numeric(as.character(weektablef[2:5]))
 weektablef<-as.character(weektablef[1])
 xmin<-min(weektablef1)
 
-legend("topleft", box.lwd = "o", col = c("darkgreen","dodgerblue","red","darkgray"), lwd = 3, cex = 1, legend = c("Copepodid", "Chalimus", "Motile", "All"))
+legend("topleft", bty = "n", col = c("darkgreen","dodgerblue","red","darkgray"), lwd = 3, cex = 1, legend = c("Copepodid", "Chalimus", "Motile", "All"))
 axis(side = 2, at = seq(from=0, to=8, by=2), las = 1)
 axis(1, at=match(seq(as.Date(x_min), x_max, "years"),index(df))*(1+space),
      labels = format(seq(as.Date(x_min), x_max, "years"),"%Y"),lwd=0)
