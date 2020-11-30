@@ -68,6 +68,8 @@
 
 #--------------make project folders and folder paths----------------------------
 #set your wd here, MAKE SURE ITS SET TO YOUR PROJECT DATA BASE IN SESSION DROPDOWN MENU ABOVE
+wd
+getwd()
 wd <- getwd()  # working directory
 setwd(wd)
 folders <- c("Code", "Data", "OutputFigures", "OutputData")
@@ -100,11 +102,11 @@ forplots2020 <- read.csv(paste(forplots2020.path, "/", "forplots2020.csv",
                         sep = ""), stringsAsFactors = FALSE)
 
 # I couldn't get this wd to work on the second try. So I have made my own here
-wd <- "C:/Users/Rowen/OneDrive/Desktop/github/CCFS-Sea-Lice-database/Data"
+#wd <- "C:/Users/Rowen/OneDrive/Desktop/github/CCFS-Sea-Lice-database/Data"
 setwd(wd)
-forplots2020 <- read.csv("forplots2020.csv")
+forplots2020 <- read.csv("data/forplots2020.csv")
 
-#View(forplots2020)
+View(forplots2020)
 
 #unhashtag to install packages below 
 #install.packages(c("boot", "MASS","plyr","dplyr", "ggplot2", "tibble", "car", "reshape2",
@@ -165,7 +167,6 @@ best2020$sum_all_lice[is.na(best2020$sum_all_lice)]<-0
 
 best2020 <- best2020 %>% rowwise() %>%
   dplyr::mutate(Sum_all_lice = sum(c_across(Lep_cope:unid_adult)))
-view(best2020)
 
 
 warnings()
@@ -1070,6 +1071,8 @@ barplot(t(groupedstagesdata), col= c("darkgray","dodgerblue","red","darkgreen") 
 licecol<-c("darkgray","dodgerblue","red","darkgreen")
 legend("topright", cex=0.6, legend = c("Total Lice", "Motile", "Chalimus", "Copepodid"), col = licecol, title = "Lice Stage", lty = 1, lwd = 4)
 
+dev.copy(png,'Outputfigures/Clayoquot.weekly.mean.lice.2020.png')
+dev.off()
 #bookmark
 #need to actually make sure that it is giving mean lice/fish because it looks like too drastic of a drop in mean lice to actually be real...
 
@@ -1099,10 +1102,9 @@ tsaltemp <- read.csv("Data/clayoquot.site.data.csv", header=TRUE, stringsAsFacto
 #RM : This is just my own wd workaround
 #tsaltemp <- read.csv("clayoquot.site.data.csv")
 
-###NOTE there is no site data for Tsapee Narrows - ask Mack 11/22/2020
 
 tsal2020 <- subset(tsaltemp, year == yr)
-
+#View(tsal2020)
 #***********************
 #remove all the comments on the csv file
 #making the separate day, month and year columns into date
@@ -1164,6 +1166,7 @@ tsal2020$date<-as.Date(tsal2020$date, origin ="%Y-%m-%d")
 #make a for loop to produce all the sites' plots and tables at once. I ran out of time
 #ex if you want Bedwell Sound north, you input 1 into tsalsites[]
 # RM : I made a for loop to help automate this part. The code below could also be automated and this loop could be better (see note at beginning of TS Plots)
+year <- yr
 
 for (d in 1:length(tsalsites)) {
   
@@ -1246,16 +1249,15 @@ lines(ritchieplottsal1$meantempsurf~xts,
 axis(4, ylim = yrangets3, cex.lab=1.5,cex.axis=1.5)
 mtext(side = 4, "Temperature (C)", line = 2.5, cex = 1.5)
 
-#x# it looks like there is no temperature or salinity variation for any of these
-#sampling dates. This is not correct.
+
 write.csv(ritchieplottsal1, paste("meanTS.",tsalsites[i], sep ="_"))
 
-pdf(paste(tsalsites[i], year,"TS.pdf" , sep='_'),5,5)
+pdf(paste(tsalsites[i],year,"TS.pdf", sep='_'),5,5)
 dev.off()
 
 }
 
-
+View(tsalsites)
 
 
 #RM : you shouldn't need the code between these hashtags
