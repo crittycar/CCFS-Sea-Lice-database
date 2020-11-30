@@ -1096,6 +1096,7 @@ for (i in 1:(length(JDweeklyintervalsloops)-1)) {
 
 #For TS plots, just change the spots that are marked (copy and paste )
 
+
 tsaltemp <- read.csv("Data/clayoquot.site.data.csv", header=TRUE, stringsAsFactors=FALSE,
          fileEncoding="latin1")
 
@@ -1252,12 +1253,11 @@ mtext(side = 4, "Temperature (C)", line = 2.5, cex = 1.5)
 
 write.csv(ritchieplottsal1, paste("meanTS.",tsalsites[i], sep ="_"))
 
-pdf(paste(tsalsites[i],year,"TS.pdf", sep='_'),5,5)
+jpeg(paste(tsalsites[i],year,"TS.pdf", sep='_'),5,5)
 dev.off()
 
 }
 
-View(tsalsites)
 
 
 #RM : you shouldn't need the code between these hashtags
@@ -1632,7 +1632,7 @@ dev.off()
 
 
 
-#A for loops for Prevalence at specific sites. 
+F#A for loops for Prevalence at specific sites. 
 #*******************
 #Change the names in the focussitelist if they do in fact change :)
 
