@@ -2076,8 +2076,7 @@ axis(side = 2, at = seq(from=0, to=33, by=3), las = 1)
 
 dev.copy(png,'OutputFigures/ClayoquotMeanLiceAbundancePerFish_2020.png')
 dev.off()
-dev.off()
-
+warnings()
 ################################################ END OF 2nd FIND AND REPLACE
 
 #Cypre
@@ -2222,7 +2221,7 @@ axis(side = 2, at = seq(from=0, to=10, by=2), las = 1)
 
 
 
-dev.copy(png,'OutputFigures/BedwellSoundMeanLiceAbundancePerFish_2020.png')
+dev.copy(png,'OutputFigures/NorthMearesMeanLiceAbundancePerFish_2020.png')
 dev.off()
 dev.off()
 
@@ -2257,6 +2256,7 @@ mtext("Count", side = 2, line = 2.4)
 ####################
 
 # RM so no weeklyliceloctable... I suggest just making your own from scratch-ola if the data it would present is not to be found above.
+#
 weeklycopf<-subset(weeklyliceloctable, assignstage == "copepodid")
 weeklychalf<-subset(weeklyliceloctable, assignstage == "chalimus")
 weeklymotilef<-subset(weeklyliceloctable, assignstage == "motile")
