@@ -2257,6 +2257,7 @@ mtext("Count", side = 2, line = 2.4)
 
 # RM so no weeklyliceloctable... I suggest just making your own from scratch-ola if the data it would present is not to be found above.
 #
+
 weeklycopf<-subset(weeklyliceloctable, assignstage == "copepodid")
 weeklychalf<-subset(weeklyliceloctable, assignstage == "chalimus")
 weeklymotilef<-subset(weeklyliceloctable, assignstage == "motile")
