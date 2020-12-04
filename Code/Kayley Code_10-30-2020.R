@@ -892,7 +892,7 @@ prevsiteday <- data.frame(date = numeric(0),
 #how to store the data in forloops
 #prevsiteweek[i,1] <- date.name[i]
 #prevsiteweek[i,2:5] <- c(mean(mean.boot), mean.boot[25], mean.boot[976])
-
+dev.off()
 ### 
 #Just doing a for loops for each location.
 
@@ -966,6 +966,7 @@ for (i in 1:nloop) {
   forprevyrange<-seq(0.00, signif(max(siteagg3$total.prevalence, na.omit = TRUE ), digits = 2), 0.01)
   loops1yrange.dp<-range(forprevyrange)
   coloursloop<-c("black","red","blue3","forestgreen")
+
   
     plot(siteagg3$total.prevalence~siteagg3$Group.date, xlim = loop1xrange.dp, ylim = loops1yrange.dp, type="n", xlab = "Date", ylab = "Prevalence (infected fish/total fish)") 
   
@@ -1547,6 +1548,7 @@ for (i in 1:(length(JDweeklyintervalsloops)-1)) {
   for (j in 1:8) {
     weeklyprevstages[i,j]<-mean(loopintvl[,(7+j)])  
   }}
+
 #overall prevalence for all stages for different dates.
 overallprev<-data.frame(weeklyprevstages,JDweeklyintervalsloops[-1])
 
@@ -1565,7 +1567,6 @@ overallprev$weekly<-as.Date(weeklyintervals, format = "%Y-%m-%d")
 
 overallprev<-na.omit(overallprev)
 ylimoverall<-as.numeric(range(overallprev$totp))
-
 
 drange<-range(overallprev$weekly)
 prevoverlim<-as.Date(drange, format = "%Y-%m-%d")
@@ -1630,7 +1631,7 @@ write.csv(overallprev[,-9], "OutputData/Clayoquot.weekly.mean.prevalence.2020.cs
 dev.copy(png,'OutputFigures/Clayoquot.weekly.mean.prevalence.2020.png')
 dev.off()
 
-
+View(overallprev)
 
 F#A for loops for Prevalence at specific sites. 
 #*******************
