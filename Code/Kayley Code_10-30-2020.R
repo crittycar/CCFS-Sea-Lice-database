@@ -250,6 +250,17 @@ attlice<-best2020[,c("Lep_cope","chalA","chalB","Caligus_cope","unid_cope","chal
 best2020$countcol<-rep(1, length(best2020$fish_id))
 
 abstotalfish<-sum(best2020$countcol)
+abstotalfish
+
+speclist <- unique(best2020$species)
+
+#count breakdown by species
+for (i in 1:length(best2020$species)) {countbyspeciesloop <- (subset(best2020, best2020$species == best2020$species[i]))
+  countbyspecies <-rep(1, length(countbyspeciesloop$species))
+  countbyspecies <- sum(countbyspecies)
+}
+countbyspecies
+
 
 
 #must use countcol for counting total fish because fish_ID is given to species that aren't included in analysis.
@@ -1051,8 +1062,6 @@ for (i in 2:(length(weeklyintervals))) {
 }
 
 
-dev.off()
-
 
 meanlicefish1<-data.frame(cbind(meanlicefish, weeklyintervals))
 rownames(meanlicefish)<-as.Date(weeklyintervals, origin=as.Date("1970-01-01"))
@@ -1073,7 +1082,6 @@ licecol<-c("darkgray","dodgerblue","red","darkgreen")
 legend("topright", cex=0.6, legend = c("Total Lice", "Motile", "Chalimus", "Copepodid"), col = licecol, title = "Lice Stage", lty = 1, lwd = 4)
 
 dev.copy(png,'Outputfigures/Clayoquot.weekly.mean.lice.2020.png')
-dev.off()
 #bookmark
 #need to actually make sure that it is giving mean lice/fish because it looks like too drastic of a drop in mean lice to actually be real...
 
@@ -1615,6 +1623,27 @@ lines(overallprev$weekly, overallprev$motp, lty=linetype[4], pch=1, lwd = 1.5, t
 #arrows(x0 = segp, motysegl, x1 = segp, motysegu, lwd = 1, angle = 90,col = "red" ,
 #       code = 3, length = 0.05)
 
+#Prevelance means by site
+unique(prevsiteday$site)
+
+Meares.prev.mean <-data.frame(subset(prevsiteday, site == "North Meares"))
+Meares.prev.mean <- mean(Meares.prev.mean$total.prevalence)
+print(Meares.prev.mean)
+#Ritchie
+Ritchie.prev.mean <-data.frame(subset(prevsiteday, site == "Ritchie Bay"))
+Ritchie.prev.mean <- mean(Ritchie.prev.mean$total.prevalence)
+print(Ritchie.prev.mean)
+#Cypre
+Cypre.prev.mean <-data.frame(subset(prevsiteday, site == "Cypre River"))
+Cypre.prev.mean <- mean(Cypre.prev.mean$total.prevalence)
+print(Cypre.prev.mean)
+#new df
+total.prevalance.means <- c(rbind(Meares.prev.mean,Ritchie.prev.mean,Cypre.prev.mean))
+Prev.tot.list <- c(rbind("North Meares", "Ritchie Bay", "Cypre River"))
+total.prevalance.means <- cbind(Prev.tot.list,total.prevalance.means)
+View(total.prevalance.means)
+
+write.csv(total.prevalance.means, "OutputData/site.prevalence.totals.2020.csv")
 
 
 #prevweekly<-which(best2020$j.date > JDweeklyintervalsloops[i] & best2020$j.date <= JDweeklyintervalsloops[i+1])
@@ -1633,7 +1662,7 @@ dev.off()
 
 View(overallprev)
 
-F#A for loops for Prevalence at specific sites. 
+#A for loops for Prevalence at specific sites. 
 #*******************
 #Change the names in the focussitelist if they do in fact change :)
 
@@ -1873,7 +1902,7 @@ site.boot<-NULL
 bigsiteboot<-rep(0, times =  length(focussitelist)*length(JDweeklyintervals))
 weeklyintervalscol<- rep(JDweeklyintervals, times = length(focussitelist))
 meanbootcol<-NULL
-
+print(focussitelist)
 #1st FIND AND REPLACE STARTS HERE##############################
 #to put the means into vector
 
@@ -1988,6 +2017,8 @@ mearessdp<-data.frame(sdcop = as.numeric(0),
 
 #this subsets by site
 loopfocussite<-focussitelist[2]
+
+
 loopsfocusdata<-subset(focusweeksitelice, groupedsites == paste(loopfocussite))
 
 
@@ -2056,7 +2087,7 @@ sitesdp<-rep(focussitelist, each = length(JDweeklyintervals))
 mpintvls<-rep(weeklyintervals, times = 4)  
 tempsdpp<-data.frame(rbind(allmeansdp, allmeansdp, allmeansdp))
 finalsd<-data.frame(sitesdp, tempsdpp, weeklyintsd)
-
+View(finalsd)
 #<-finalsd[c(-1, -6)]
 #overallsd<-row.names(finalsd[,6])
 par(mar=c(5.1, 4.1, 4.1, 2.1))
@@ -2081,7 +2112,6 @@ warnings()
 ################################################ END OF 2nd FIND AND REPLACE
 
 #Cypre
-
 
 cypresdp[is.na(cypresdp)]<-0
 cypresdpl<-cypresdp-cypremeansdp
@@ -2258,6 +2288,10 @@ mtext("Count", side = 2, line = 2.4)
 
 # RM so no weeklyliceloctable... I suggest just making your own from scratch-ola if the data it would present is not to be found above.
 #
+weeklyliceloctable <- data.frame(meancop = as.numeric(0), 
+                         meanchal = as.numeric(0),
+                         meanmot = as.numeric(0),
+                         meantot = as.numeric(0))
 
 weeklycopf<-subset(weeklyliceloctable, assignstage == "copepodid")
 weeklychalf<-subset(weeklyliceloctable, assignstage == "chalimus")
@@ -2298,3 +2332,25 @@ mtext("Mean Lice Abundance per Fish", side = 2, line = 2.4)
 
 dev.copy(png,'OutputFigures/MeanLiceAbundancePerFish_2020.png')
 dev.off()
+
+
+####making a data table with min and max lice for each species with respective date and location
+colnames(best2020)
+chum_abun_cypre <- data.frame(subset(best2020, species == "chum"& location == "Cypre River"))
+print(max(chum_abun_cypre$Sum_all_lice))
+#now input the max into the next df creation
+chum_abun_cypre <- data.frame(subset(chum_abun_cypre, Sum_all_lice == "11"))
+View(chum_abun_cypre)
+
+
+library(dplyr) 
+
+chum_abun <- filter(best2020, species == "chum" & location == "Cypre River")
+
+chinook_abun
+
+coho_abun
+
+pink_abun
+
+sock_abun
