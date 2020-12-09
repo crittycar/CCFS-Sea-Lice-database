@@ -260,8 +260,40 @@ for (i in 1:length(best2020$species)) {countbyspeciesloop <- (subset(best2020, b
   countbyspecies <- sum(countbyspecies)
 }
 countbyspecies
+#x#
+#this is returning the count for chinook but not any of the others -> hold onto for Rowen
 
+#determining instances by date a.k.a how many fish were caught each sampling day
+#1 or more
+nrow(best2020[best2020$Sum_all_lice > 60, ])
+#total amount of lice for <1 group
+sum(subset(best2020, Sum_all_lice > 1)$Sum_all_lice)
 
+#3 or more
+nrow(best2020[best2020$Sum_all_lice > 3, ])
+sum(subset(best2020, Sum_all_lice > 3)$Sum_all_lice)
+
+#species breakdown
+#make a loop for this
+#coho
+tot.lice.coho <- sum(subset(best2020, species == "coho")$Sum_all_lice)
+print(tot.lice.coho)
+coho.count <- nrow(best2020[best2020$species == "coho", ])
+print(coho.count)
+tot.lice.coho/coho.count
+
+#chinook
+tot.lice.chin <- sum(subset(best2020, species == "chinook")$Sum_all_lice)
+print(tot.lice.chin)
+chin.count <- nrow(best2020[best2020$species == "chinook", ])
+print(chin.count)
+tot.lice.chin/chin.count
+
+#pink
+
+#sockeye
+
+#chum
 
 #must use countcol for counting total fish because fish_ID is given to species that aren't included in analysis.
 #mean lice = sum of sum of lice / abstotal
