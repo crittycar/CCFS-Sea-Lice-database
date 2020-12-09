@@ -290,10 +290,25 @@ print(chin.count)
 tot.lice.chin/chin.count
 
 #pink
+tot.lice.pink <- sum(subset(best2020, species == "pink")$Sum_all_lice)
+print(tot.lice.pink)
+pink.count <- nrow(best2020[best2020$species == "pink", ])
+print(pink.count)
+tot.lice.pink/pink.count
 
 #sockeye
+tot.lice.sockeye <- sum(subset(best2020, species == "sockeye")$Sum_all_lice)
+print(tot.lice.sockeye)
+sockeye.count <- nrow(best2020[best2020$species == "sockeye", ])
+print(sockeye.count)
+tot.lice.sockeye/sockeye.count
 
 #chum
+tot.lice.chum <- sum(subset(best2020, species == "chum")$Sum_all_lice)
+print(tot.lice.chum)
+chum.count <- nrow(best2020[best2020$species == "chum", ])
+print(chum.count)
+tot.lice.chum/chum.count
 
 #must use countcol for counting total fish because fish_ID is given to species that aren't included in analysis.
 #mean lice = sum of sum of lice / abstotal
