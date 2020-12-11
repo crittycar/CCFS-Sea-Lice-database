@@ -103,8 +103,8 @@ forplots2020 <- read.csv(paste(forplots2020.path, "/", "forplots2020.csv",
 
 # I couldn't get this wd to work on the second try. So I have made my own here
 #wd <- "C:/Users/Rowen/OneDrive/Desktop/github/CCFS-Sea-Lice-database/Data"
-setwd(wd)
-forplots2020 <- read.csv("data/forplots2020.csv")
+#setwd(wd)
+#forplots2020 <- read.csv("data/forplots2020.csv")
 
 
 
