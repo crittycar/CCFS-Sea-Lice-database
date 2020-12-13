@@ -103,10 +103,10 @@ forplots2020 <- read.csv(paste(forplots2020.path, "/", "forplots2020.csv",
 
 # I couldn't get this wd to work on the second try. So I have made my own here
 #wd <- "C:/Users/Rowen/OneDrive/Desktop/github/CCFS-Sea-Lice-database/Data"
-setwd(wd)
-forplots2020 <- read.csv("data/forplots2020.csv")
+#setwd(wd)
+#forplots2020 <- read.csv("data/forplots2020.csv")
 
-View(forplots2020)
+
 
 #unhashtag to install packages below 
 #install.packages(c("boot", "MASS","plyr","dplyr", "ggplot2", "tibble", "car", "reshape2",
@@ -250,65 +250,46 @@ attlice<-best2020[,c("Lep_cope","chalA","chalB","Caligus_cope","unid_cope","chal
 best2020$countcol<-rep(1, length(best2020$fish_id))
 
 abstotalfish<-sum(best2020$countcol)
-abstotalfish
+
 
 speclist <- unique(best2020$species)
 
 #count breakdown by species
-for (i in 1:length(best2020$species)) {countbyspeciesloop <- (subset(best2020, best2020$species == best2020$species[i]))
-  countbyspecies <-rep(1, length(countbyspeciesloop$species))
-  countbyspecies <- sum(countbyspecies)
-}
-countbyspecies
+#RM : I don't know what this is for but here is the proper code
+
+
+countbyspecies <- aggregate(countcol ~ species, best2020, sum)
+
 #x#
 #this is returning the count for chinook but not any of the others -> hold onto for Rowen
 
 #determining instances by date a.k.a how many fish were caught each sampling day
 #1 or more
 nrow(best2020[best2020$Sum_all_lice > 60, ])
-#total amount of lice for <1 group
+#total amount of lice for > 1 group
 sum(subset(best2020, Sum_all_lice > 1)$Sum_all_lice)
 
-#3 or more
-nrow(best2020[best2020$Sum_all_lice > 3, ])
-sum(subset(best2020, Sum_all_lice > 3)$Sum_all_lice)
+#3 or more 
+# RM : if you want 3 or more, use the >= I have added it below
+nrow(best2020[best2020$Sum_all_lice >= 3, ])
+sum(subset(best2020, Sum_all_lice >= 3)$Sum_all_lice)
 
 #species breakdown
 #make a loop for this
 #coho
-tot.lice.coho <- sum(subset(best2020, species == "coho")$Sum_all_lice)
-print(tot.lice.coho)
-coho.count <- nrow(best2020[best2020$species == "coho", ])
-print(coho.count)
-tot.lice.coho/coho.count
 
-#chinook
-tot.lice.chin <- sum(subset(best2020, species == "chinook")$Sum_all_lice)
-print(tot.lice.chin)
-chin.count <- nrow(best2020[best2020$species == "chinook", ])
-print(chin.count)
-tot.lice.chin/chin.count
+#RM : for loop :
+sp.breakdown <- data.frame(coho = numeric(0),
+           chum = numeric(0),
+           chinook = numeric(0),
+           pink = numeric(0),
+           sockeye = numeric(0))
 
-#pink
-tot.lice.pink <- sum(subset(best2020, species == "pink")$Sum_all_lice)
-print(tot.lice.pink)
-pink.count <- nrow(best2020[best2020$species == "pink", ])
-print(pink.count)
-tot.lice.pink/pink.count
+for (i in speclist) {
+  sp.breakdown[1,i] <- sum(subset(best2020, species == i)$Sum_all_lice)/nrow(best2020[best2020$species == i, ])
+}
 
-#sockeye
-tot.lice.sockeye <- sum(subset(best2020, species == "sockeye")$Sum_all_lice)
-print(tot.lice.sockeye)
-sockeye.count <- nrow(best2020[best2020$species == "sockeye", ])
-print(sockeye.count)
-tot.lice.sockeye/sockeye.count
-
-#chum
-tot.lice.chum <- sum(subset(best2020, species == "chum")$Sum_all_lice)
-print(tot.lice.chum)
-chum.count <- nrow(best2020[best2020$species == "chum", ])
-print(chum.count)
-tot.lice.chum/chum.count
+##########
 
 #must use countcol for counting total fish because fish_ID is given to species that aren't included in analysis.
 #mean lice = sum of sum of lice / abstotal
@@ -329,6 +310,26 @@ Challicetab<-aggregate(chalsum~groupedsites, data = best2020, sum)
 alltab<-aggregate(Sum_all_lice~groupedsites, data = best2020, sum)
 # This is the final table for plots of sums! :)))
 licetable<-data.frame(Motlicetab, Coplicetab[2], Challicetab[2], alltab[2], Attlicetab[2])
+
+# This is a table for means by site and date
+
+Motlicetab.mean.site.date<-aggregate(motsum~groupedsites + date, data = best2020, mean)
+Attlicetab.mean.site.date<-aggregate(attachedsum~groupedsites + date, data = best2020, mean)
+Coplicetab.mean.site.date<-aggregate(copsum~groupedsites+ date, data = best2020, mean)
+Challicetab.mean.site.date<-aggregate(chalsum~groupedsites+ date, data = best2020, mean)
+alltab.mean.site.date<-aggregate(Sum_all_lice~groupedsites+ date, data = best2020, mean)
+# This is the final table for plots of means! :)))
+licetable.mean.site.date<-data.frame(Motlicetab.mean.site.date, Coplicetab.mean.site.date[3], Challicetab.mean.site.date[3], alltab.mean.site.date[3], Attlicetab.mean.site.date[3])
+
+#dir.out <- "C:/Users/Rowen/OneDrive/Desktop/github/CCFS-Sea-Lice-database/Data/OutputData"
+
+#RM : still can't get directories to work :)
+#setwd(dir.out)
+#write.csv(licetable.mean.site.date, paste(yr, "mean_lice_by_site_date.csv", sep = "_"))
+
+
+
+
 
 #view to make sense
 #view(licetable)
@@ -1620,7 +1621,8 @@ coloursloop<-c("darkgray","darkgreen","dodgerblue","red")
 #x# unsure where to fix this difference in row length
 overallprev$weekly<-as.Date(weeklyintervals, format = "%Y-%m-%d")
 
-overallprev<-na.omit(overallprev)
+#RM : I think this line below is too general. It removes all rows because Sd is not a thing for prevalence anymore
+#overallprev<-na.omit(overallprev)
 ylimoverall<-as.numeric(range(overallprev$totp))
 
 drange<-range(overallprev$weekly)
