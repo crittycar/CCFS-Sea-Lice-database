@@ -288,8 +288,17 @@ sp.breakdown <- data.frame(coho = numeric(0),
 for (i in speclist) {
   sp.breakdown[1,i] <- sum(subset(best2020, species == i)$Sum_all_lice)/nrow(best2020[best2020$species == i, ])
 }
+###################calculating weights########
+colnames(best2020)
 
-##########
+  weights.df <- data.frame(cbind(best2020$fish_id, best2020$location, best2020$j.date, best2020$Sum_all_lice, best2020$length,best2020$height ,deparse.level = 1))
+  colnames(weights.df) <- c("fish_id","location","j.date","Sum_all_lice","length","height")
+
+#create new coloum for weight using algorithm
+  
+#determine p value from all weight values acumulated?
+#then get high/low estimate for each value?
+  ##########
 
 #must use countcol for counting total fish because fish_ID is given to species that aren't included in analysis.
 #mean lice = sum of sum of lice / abstotal
