@@ -291,12 +291,38 @@ for (i in speclist) {
 ###################calculating weights########
 colnames(best2020)
 
-  weights.df <- data.frame(cbind(best2020$fish_id, best2020$location, best2020$j.date, best2020$Sum_all_lice, best2020$length,best2020$height ,deparse.level = 1))
-  colnames(weights.df) <- c("fish_id","location","j.date","Sum_all_lice","length","height")
+  
+  View(weights.df)
+  #w = alpha(L)^g1 *D^g2
+#loge(w) = loge(a) + g1*loge(L)+ g2 * loge(D)
+  a = rep(-9.07,times = 991)
+  g1 = rep(1.97,times = 991)
+  g2 = rep(0.74,times = 991)
+
+  weights.df <- data.frame(cbind(best2020$fish_id, best2020$location, best2020$Sum_all_lice, best2020$length,best2020$height, a, g1, g2,deparse.level = 1))
+colnames(weights.df) <- c("fish_id","location","Sum_all_lice","length.1","height","a","g1","g2")
+weights.df$height <- as.numeric(weights.df$height)
+weights.df$length.1 <- as.numeric(weights.df$length.1)
+weights.df$a <- as.numeric(weights.df$a)
+weights.df$g2 <- as.numeric(weights.df$g2)
+weights.df$g1 <- as.numeric(weights.df$g1)
+weights.df <- na.omit(weights.df)
+View(weights.df)
+#loge(w) = loge(a) + g1*loge(L)+ g2 * loge(D)
+
+weights.df <- weights.df %>% dplyr::mutate(weight = (a) + g1 * log(length.1) + g2 * log(height))
+
+#weights.df <- weights.df %>% dplyr::mutate(weight = 1/log(weight))
+
+unique(weights.df$weight)
+
+mean(weights.df$weight)
+
+?mutate
 
 #create new coloum for weight using algorithm
   
-#determine p value from all weight values acumulated?
+#determine p value from all weight values acumulated? 
 #then get high/low estimate for each value?
   ##########
 
