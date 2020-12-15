@@ -310,18 +310,14 @@ weights.df <- na.omit(weights.df)
 View(weights.df)
 #loge(w) = loge(a) + g1*loge(L)+ g2 * loge(D)
 
-weights.df <- weights.df %>% dplyr::mutate(weight = (a) + g1 * log(length.1) + g2 * log(height))
+#weights.df <- weights.df %>% dplyr::mutate(weight = (a) + g1 * log(length.1) + g2 * log(height))
 
-#weights.df <- weights.df %>% dplyr::mutate(weight = 1/log(weight))
-
-unique(weights.df$weight)
 #w = alpha(L)^g1 *D^g2
 weights.df <- weights.df %>% dplyr::mutate(weight = exp(a) * length.1^g1 * height^g2)
 
+fivenum(weights.df$weight)
 mean(weights.df$weight)
-#create new coloum for weight using algorithm
 
-  
 #determine p value from all weight values acumulated? 
 #then get high/low estimate for each value?
   ##########
