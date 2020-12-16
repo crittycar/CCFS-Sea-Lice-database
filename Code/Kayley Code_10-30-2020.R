@@ -318,6 +318,8 @@ weights.df <- weights.df %>% dplyr::mutate(weight = exp(a) * length.1^g1 * heigh
 fivenum(weights.df$weight)
 mean(weights.df$weight)
 
+
+
 #determine p value from all weight values acumulated? 
 #then get high/low estimate for each value?
   ##########
@@ -554,12 +556,9 @@ presentmeanflchum<-meandatetable[notmissingchum,]
 
 write.csv(meandatetable,file.path(data.output.path,"mean.lice.and.forklength.by.date.2020.csv"))
 
-#daily forklength for all species.
-#begin with setting the path for the figure to be saved to: figures.path
-jpeg(filename = "OutputFigures/DailyForkLength2020.jpg")
-#note, if you are trying to adjust aesthetics, you will have take off the above save code to see the plots. When jpeg is open, you won't see you plot untill you use dev.off to save it to the specified location.
-# Can I recommend putting this at the bottom of the plot so you can see it being created before the file is made? - RM
 
+#daily forklength for all species.
+dev.off()
 #begin plot, set ranges by looking at max/ min values from mean table
 yrangefl<-0:95
 xrangefl<-meandatetable$date
@@ -592,29 +591,28 @@ lines(presentmeanflchinook$meanflchinook~presentmeanflchinook$date, lwd = 2, col
 listspeciesinterest<-c("Chum", "Coho", "Chinook")
 
 #Legend
-legend("topright", legend = listspeciesinterest, col = c("dodgerblue", "black","red"), cex = 1, lwd = 1, title = "Species", lty = c(1,2,3))
+legend("topright", legend = listspeciesinterest, col = c("dodgerblue", "black","red"), cex = 1.1, lwd = 1, title = "Species", lty = c(3,3,3))
 
-#save current plot pane as jpeg, trying to automate this but it may require ggplot, so we'll hold off for now. use def.off at the end of all plots to save to figures path
-# RM : if you want to see the plot as it is being created : jpeg(filename = "OutputFigures/DailyForkLength2020.jpg")
+dev.copy(png,"OutputFigures/DailyForkLength2020.png")
 dev.off()
-
 #May want to put 2018 on there too in diff colour. 
 
 #One plot for each species
-jpeg(filename = "OutputFigures/DailyForkLengthChum.jpg")
 
 plot(presentmeanflchum$meanflchum~presentmeanflchum$date, ylab = "Mean Forklength (mm)", xlab = "", main = "Chum Mean Forklength, 2020", cex.lab = 1.5 , cex.axis = 1.4)
 lines(presentmeanflchum$meanflchum~presentmeanflchum$date, na.pass=TRUE, lwd = 2, col = "dodgerblue", type = "p", pch = 1)
 abline(lm(presentmeanflchum$meanflchum~presentmeanflchum$date, na.pass=TRUE, lwd = 2), col = "dodgerblue")
+
+dev.copy(png,"OutputFigures/DailyForkLengthChum.png")
+
 dev.off()
 
-jpeg(filename = "OutputFigures/DailyForkLengthCoho.jpg")
 plot(presentmeanflcoho$meanflcoho~presentmeanflcoho$date, ylab = "Mean Forklength (mm)", xlab = "", main = "Coho Mean Forklength, 2020", cex.lab = 1.5 , cex.axis = 1.4)
-lines(presentmeanflcoho$meanflcoho~presentmeanflcoho$date, na.pass=TRUE, lwd = 2, lty = 1, col = "darkgray", type = "p", pch = 2)
-abline(lm(presentmeanflcoho$meanflcoho~presentmeanflcoho$date, na.pass=TRUE, lwd = 2), col = "lightgray")
-dev.off()
+lines(presentmeanflcoho$meanflcoho~presentmeanflcoho$date, na.pass=TRUE, lwd = 2, lty = 1, col = "black", type = "p", pch = 2)
+abline(lm(presentmeanflcoho$meanflcoho~presentmeanflcoho$date, na.pass=TRUE, lwd = 2), col = "black")
 
-jpeg(filename = "OutputFigures/DailyForkLengthChinook.jpg")
+dev.copy(png,"OutputFigures/DailyForkLengthCoho.png")
+dev.off()
 
 
 
@@ -622,7 +620,9 @@ plot(presentmeanflchinook$meanflchinook~presentmeanflchinook$date, ylab = "Mean 
 lines(presentmeanflchinook$meanflchinook~presentmeanflchinook$date, na.pass=TRUE, lwd = 2, col = "red", na.rm = TRUE, lty = 2, type = "p", pch =3)
 abline(lm(presentmeanflchinook$meanflchinook~presentmeanflchinook$date, na.pass=TRUE, lwd = 2), col = "red")
 
-legend("topleft", legend = listspeciesinterest, col = c("dodgerblue", "lightgray","red"), cex = 0.7, lwd = 1, title = "Species", lty = c(1,1,1), pch = c(1, 2, 3))
+#legend("topleft", legend = listspeciesinterest, col = c("dodgerblue", "lightgray","red"), cex = 0.7, lwd = 1, title = "Species", lty = c(1,1,1), pch = c(1, 2, 3))
+dev.copy(png,"OutputFigures/DailyForkLengthChinook.png")
+
 dev.off()
 
 ## MAKING WEEKLY INTERVAL DATA FOR FORKLENGTHS########
@@ -753,27 +753,25 @@ yrangefl<-seq(30, 120, length.out = length(weeklyintervals))
 
 #begin plot base
 
-#save area
-jpeg(filename = "OutputFigures/WeeklyForkLength2020.jpg")
 
 plot(yrangefl~weeklyintervals, cex.lab = 1.5 , cex.axis = 1.4, ylab = "Mean Forklength (mm)", type = "n", xlab = "", main = " Weekly Forklength of Clayoquot Salmon, 2020")
 
 #chum
-lines(plotchumfl$meanflfish~plotchumfl$weeklyintervals, lwd = 2, lty = 3)
+lines(plotchumfl$meanflfish~plotchumfl$weeklyintervals,cex =1.2, lwd = 2, lty = 3)
 
 #coho
-lines(plotcohofl$meanflfish~plotcohofl$weeklyintervals, lwd = 2, lty = 3, col = "dodgerblue", na.pass = TRUE)
+lines(plotcohofl$meanflfish~plotcohofl$weeklyintervals,cex =1.2, lwd = 2, lty = 3, col = "dodgerblue", na.pass = TRUE)
 
 #chin
-lines(plotchinfl$meanflfish~plotchinfl$weeklyintervals, lwd = 2, lty = 3, col = "red", na.pass = TRUE)
+lines(plotchinfl$meanflfish~plotchinfl$weeklyintervals, cex =1.2, lwd = 2, lty = 3, col = "red", na.pass = TRUE)
 
 
-legend("topright", cex=1, legend = listspeciesinterest,
-       lty= c(1,3,3), col = c("black", "dodgerblue", "red"), title = "Species", lwd = 2)
+legend("topright", cex=1.1, legend = listspeciesinterest,
+       lty= c(3,3,3), col = c("black", "dodgerblue", "red"), title = "Species", lwd = 2)
 
-# save plot as WeeklyForklength2020
 
-dev.off()
+dev.copy(jpg,"OutputFigures/WeeklyForkLength2020.jpg")
+
 
 ####################
 
@@ -953,7 +951,7 @@ Data<-data.frame(Sample_Site, Lice_Stages, Lice_Sum)
 
 
 ## PLOTTING ##
-
+dev.off()
 #setting up plot descriptions
 colours<-rainbow(n)
 linetype<-c(1:n)   
@@ -1055,7 +1053,7 @@ for (i in 1:nloop) {
   #xrange.dp<-range(best2020$date)
   forprevyrange<-seq(0.00, signif(max(siteagg3$total.prevalence, na.omit = TRUE ), digits = 2), 0.01)
   loops1yrange.dp<-range(forprevyrange)
-  coloursloop<-c("black","red","blue3","forestgreen")
+  coloursloop<-c("black","green3","dodgerblue","red")
 
   
     plot(siteagg3$total.prevalence~siteagg3$Group.date, xlim = loop1xrange.dp, ylim = loops1yrange.dp, type="n", xlab = "Date", ylab = "Prevalence (infected fish/total fish)") 
@@ -1067,17 +1065,18 @@ for (i in 1:nloop) {
   title(main = listofsites[i])
   
   
-  lines(siteagg3$Group.date, siteagg3$total.prevalence, lty=linetype[1], pch=plotchar[1], lwd = 1.5, type ="b", col = "black")
-  lines(siteagg3$Group.date, siteagg3$copepodid.prevalence, lty=linetype[2], pch=plotchar[2], lwd = 1.5, type ="b", col = "red" )
-  lines(siteagg3$Group.date, siteagg3$chalimus.prevalence, lty=linetype[3], pch=plotchar[3], lwd = 1.5, type ="b", col = "blue3" )
-  lines(siteagg3$Group.date, siteagg3$motile.prevalence, lty=linetype[4], pch=plotchar[4], lwd = 1.5, type ="b", "forestgreen" )
+  lines(siteagg3$Group.date, siteagg3$total.prevalence, lty=linetype[1], pch=plotchar[1], lwd = 1.5, type ="o", col = "black")
+  lines(siteagg3$Group.date, siteagg3$copepodid.prevalence, lty=linetype[2], pch=plotchar[2], lwd = 1.5, type ="o", col = "green3" )
+  lines(siteagg3$Group.date, siteagg3$chalimus.prevalence, lty=linetype[3], pch=plotchar[5], lwd = 1.5, type ="o", col = "dodgerblue" )
+  lines(siteagg3$Group.date, siteagg3$motile.prevalence, lty=linetype[4], pch=plotchar[6], lwd = 1.5, type ="o", "red" )
   
   prevsiteday<-rbind(prevsiteday, siteagg3)
   
 }
+
 # RM : The line below will make the legend come back into the plot panel.
 #par(xpd=FALSE)
-
+dev.off()
 #Daily mean lice with stages
 datesforstages<-format(meandatetable$date, format = "%b %d %y")
 groupedstagesdata<-meandatetable[,c(2,3,6,5)]
@@ -1086,8 +1085,8 @@ colnames(groupedstagesdata)=c("Mean Total Lice","Mean Motile","Mean Chalimus","M
 rownames(groupedstagesdata)= datesforstages
 stagesmatrix=matrix(groupedstagesdata)
 
-barplot(t(groupedstagesdata), col= c("darkgray","dodgerblue","red","darkgreen") , border="white", font.axis=2, 
-        beside=T, legend=c(), xlab="group", font.lab=2, ylim = c(0,0.8), ylab = "Mean Lice per Fish", main = "Daily Mean Lice - Clayoquot Salmon, 2020")
+barplot(t(groupedstagesdata), col= c("darkgray","Red","dodgerblue","darkgreen") , border="white", font.axis=2, 
+        beside=T, legend=c(), xlab="Dates", font.lab=2, ylim = c(0,0.8), ylab = "Mean Lice per Fish", main = "Daily Mean Lice - Clayoquot Salmon, 2020")
 #abline(h= seq(0, ceiling(max(groupedstagesdata)), 0.1), col = "light gray")
 
 
@@ -1140,7 +1139,7 @@ for (i in 2:(length(weeklyintervals))) {
   }
 }
 
-
+dev.off()
 
 meanlicefish1<-data.frame(cbind(meanlicefish, weeklyintervals))
 rownames(meanlicefish)<-as.Date(weeklyintervals, origin=as.Date("1970-01-01"))
@@ -1155,7 +1154,7 @@ rownames(groupedstagesdata)= datesforstages
 stagesmatrix=matrix(groupedstagesdata)
 
 barplot(t(groupedstagesdata), col= c("darkgray","dodgerblue","red","darkgreen") , border="white", font.axis=2, 
-        beside=T, legend=c(), font.lab=2, ylim = c(0,0.8), ylab = "Mean Lice per Fish", main = "Mean Lice per Fish")
+        beside=T, legend=c(), font.lab=2, ylim = c(0,0.8), ylab = "Mean Lice per Fish", main = "Weekly Mean Lice per Fish")
 #abline(h= seq(0, 0.8, 0.1), col = "light gray")
 licecol<-c("darkgray","dodgerblue","red","darkgreen")
 legend("topright", cex=0.6, legend = c("Total Lice", "Motile", "Chalimus", "Copepodid"), col = licecol, title = "Lice Stage", lty = 1, lwd = 4)
@@ -1221,7 +1220,7 @@ loctsal<-c("bedwellplottsal","mearesplottsal","cypreplottsal","ritchieplottsal")
 tsalsites<-unique(tsal2020$groupedsites)
 tsal2020$salt_surf<-as.numeric(as.character(tsal2020$salt_surf))
 tsal2020$salt_1m<-as.numeric(as.character(tsal2020$salt_1m))
-tsal2020$temp_surf<-as.numeric(as.character(tsal2020$temp_surf))
+tsal2020$temp_surf<-as.numeric(as.characteFr(tsal2020$temp_surf))
 tsal2020$temp_1m<-as.numeric(as.character(tsal2020$temp_1m))
 tsal2020$date<-as.Date(tsal2020$date, origin ="%Y-%m-%d")
 
@@ -1922,7 +1921,7 @@ for (i in 1:length(focussitelist)){
   
   #saves the plot
   # RM : The dev.copy is the only error remaining. As I don't fully understand how the directories work between github and R, I will leave it with you :) 
-  #dev.copy(png,'OutputFigures/Clayoquot.weekly.mean.prevalence.2020.png',paste(focussitelist[i]))
+  #dev.copy(jpeg,'OutputFigures/Clayoquot.weekly.mean.prevalence.2020.jpeg',paste(focussitelist[i]))
   #dev.off()
   #tables of data for each site
 #  write.csv(overallprev[,-9], paste(focussitelist[i],"OutputData/weekly.mean.prevalence.2020"))
