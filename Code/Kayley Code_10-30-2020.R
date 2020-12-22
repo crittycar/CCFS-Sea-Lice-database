@@ -312,8 +312,8 @@ colnames(best2020)
   g1 = rep(1.97,times = 991)
   g2 = rep(0.74,times = 991)
 
-  weights.df <- data.frame(cbind(best2020$fish_id, best2020$location, best2020$Sum_all_lice, best2020$length,best2020$height, a, g1, g2,deparse.level = 1))
-colnames(weights.df) <- c("fish_id","location","Sum_all_lice","length.1","height","a","g1","g2")
+  weights.df <- data.frame(cbind(best2020$fish_id, best2020$location, best2020$Sum_all_lice, best2020$length,best2020$height, a, g1, g2,best2020$species,deparse.level = 1))
+colnames(weights.df) <- c("fish_id","location","Sum_all_lice","length.1","height","a","g1","g2","species")
 weights.df$height <- as.numeric(weights.df$height)
 weights.df$length.1 <- as.numeric(weights.df$length.1)
 weights.df$a <- as.numeric(weights.df$a)
@@ -1942,7 +1942,6 @@ for (i in 1:length(focussitelist)){
 }
 
 
-
 # RM : This could probably be made into a much smaller for loop and automated by defining which sites you wish to see abundance for.
 #MEAN ABUNDANCE Aa
 #Mean Abundance 2019
@@ -1958,7 +1957,7 @@ for (i in 1:length(focussitelist)){
 
 
 #subset the best2020 to get right species (fishbest2020). Then only take the columns that I want to show mean lice stages : stage sums per fish, date, j.date and grouped sites.
-#subset to focus on ritchie, ritchie and bedwell north
+#subset to focus on meares, ritchie, cypre #2020 mains
 #Then assign weekly intervals to dates 
 #Now you can subset by site
 #then you can use bootstrap resampling to get the means of sites by the assigned weekly intervals.
@@ -1976,7 +1975,7 @@ names(weeksitelice)<-paste(c("date", "j.date", "weeklyintvl", "groupedsites", "c
 #%%%%
 #*********************
 #to add a site to the focussitelist, add | groupedsites == "desired site" to the code below for vector focusweeksitelice
-focusweeksitelice<-subset(weeksitelice, groupedsites == "Cypre River" | groupedsites == "Ritchie Bay" | groupedsites == "North Meares" | groupedsites == "Bedwell Sound North")
+focusweeksitelice<-subset(weeksitelice, groupedsites == "Cypre River" | groupedsites == "Ritchie Bay" | groupedsites == "North Meares")
 focussitelist<- unique(focusweeksitelice$groupedsites)
 
 # RM : This isn't actually used anywhere else, so we can forget about it and the error below
@@ -2047,7 +2046,7 @@ ritchiesdp<-data.frame(sdcop = as.numeric(0),
 #for (i in 1 : length(focussitelist)){
 
 #this subsets by site
-loopfocussite<-focussitelist[3]
+loopfocussite<-focussitelist[2]
 loopsfocusdata<-subset(focusweeksitelice, groupedsites == paste(loopfocussite))
 
 
@@ -2104,29 +2103,6 @@ mearessdp<-data.frame(sdcop = as.numeric(0),
                        sdmot = as.numeric(0),
                        sdtot = as.numeric(0))
 
-
-#for (i in 1 : length(focussitelist)){
-
-#this subsets by site
-loopfocussite<-focussitelist[2]
-
-
-loopsfocusdata<-subset(focusweeksitelice, groupedsites == paste(loopfocussite))
-
-
-
-for (j in 1:length(JDweeklyintervals)) {
-  
-  #for each interval 1000 iterations are done
-  #Subset main data by 1 weeklyintvl to get samples of counts per fish for all dates of one interval.
-  tempsdp<-subset(loopsfocusdata, weeklyintvl == JDweeklyintervals[j])
-  for (r in 1:4) {
-    mearesmeansdp[j,r] <- mean(tempsdp[,(4+r)])
-    mearessdp[j,r] <- sd(tempsdp[,(4+r)])/sqrt(length(tempsdp$date))
-  }      
-  
-}   
-
 #overall
 
 
@@ -2179,9 +2155,9 @@ sitesdp<-rep(focussitelist, each = length(JDweeklyintervals))
 mpintvls<-rep(weeklyintervals, times = 4)  
 tempsdpp<-data.frame(rbind(allmeansdp, allmeansdp, allmeansdp))
 finalsd<-data.frame(sitesdp, tempsdpp, weeklyintsd)
-View(finalsd)
 #<-finalsd[c(-1, -6)]
 #overallsd<-row.names(finalsd[,6])
+dev.off()
 par(mar=c(5.1, 4.1, 4.1, 2.1))
 weeklyintervals<-format(weeklyintervals, format= "%b %d %y")
 noyrweekintvl<-format(weeklyintervals, format = "%b %d" )
@@ -2253,7 +2229,7 @@ dev.off()
 
 #Ritchie
 
-
+dev.off()
 
 ritchiesdp[is.na(ritchiesdp)]<-0
 ritchiesdpl<-ritchiesdp-ritchiemeansdp
@@ -2274,13 +2250,13 @@ sitesdp<-rep(focussitelist, each = length(JDweeklyintervals))
 mpintvls<-rep(weeklyintervals, times = 4)  
 tempsdpp<-data.frame(rbind(ritchiemeansdp, ritchiemeansdp, ritchiemeansdp))
 finalsd<-data.frame(sitesdp, tempsdpp, weeklyintsd)
-
 #<-finalsd[c(-1, -6)]
 #overritchiesd<-row.names(finalsd[,6])
+dev.off()
 par(mar=c(5.1, 4.1, 4.1, 2.1))
 weeklyintervals<-format(weeklyintervals, format= "%b %d %y")
 noyrweekintvl<-format(weeklyintervals, format = "%b %d" )
-mp<- barplot(t(ritchiemeansdp), ylim=c(0,26), yaxt = "n", 
+mp<- barplot(t(ritchiemeansdp), ylim=c(0,36), yaxt = "n", 
              main = "Ritchie Bay Mean Lice Abundance per Fish", 
              col=c("darkgreen","dodgerblue","red","darkgray"), 
              cex.lab = 1.5, cex.axis = 2, beside = T,
@@ -2291,13 +2267,13 @@ arrows(x0 = mp, t(ritchiesdplneg), x1 = mp, t(ritchiesdpu), lwd = 0.75, angle = 
        code = 3, length = 0.05)
 
 legend("topleft", bty = "n", col = c("darkgreen","dodgerblue","red","darkgray"), lwd = 3, cex = 1, legend = c("Copepodid", "Chalimus", "Motile", "Total"))
-axis(side = 2, at = seq(from=0, to=26, by=2), las = 1)
+axis(side = 2, at = seq(from=0, to= 36, by=2), las = 1)
 
 
 dev.copy(png,'OutputFigures/RitchieBayMeanLiceAbundancePerFish_2020.png')
 dev.off()
 dev.off()
-
+warnings()
 ###############################################
 
 
@@ -2446,3 +2422,5 @@ coho_abun
 pink_abun
 
 sock_abun
+
+View(finalsd)
