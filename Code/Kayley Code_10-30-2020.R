@@ -221,6 +221,7 @@ focus2020<-data.frame(subset(best2020, groupedsites == "North Meares" |groupedsi
 #summary(comparedf(focus2020,best2020))
 
 ## END OF SET UP ##
+ 
 
 ## CALCULATING USEFUL VALUES FOR PREVALENCE AND MEAN LICE PLOTS ##
 
@@ -277,6 +278,17 @@ sum(subset(best2020, Sum_all_lice >= 3)$Sum_all_lice)
 #species breakdown
 #make a loop for this
 #coho
+#Overall means b yr comparison
+library(dplyr)
+#2018
+twentyeighteen <- subset(forplots2020, year == "2018")
+mean(twentyeighteen$sum_all_lice)
+#2019
+twentynineteen <- subset(forplots2020, year == "2019")
+mean(twentynineteen$sum_all_lice)
+#2020
+twentytwenty <- subset(forplots2020, year == "2020")
+mean(best2020$Sum_all_lice)
 
 #RM : for loop :
 sp.breakdown <- data.frame(coho = numeric(0),
@@ -295,7 +307,8 @@ colnames(best2020)
   View(weights.df)
   #w = alpha(L)^g1 *D^g2
 #loge(w) = loge(a) + g1*loge(L)+ g2 * loge(D)
-  a = rep(-9.07,times = 991)
+
+    a = rep(-9.07,times = 991)
   g1 = rep(1.97,times = 991)
   g2 = rep(0.74,times = 991)
 
@@ -1220,7 +1233,7 @@ loctsal<-c("bedwellplottsal","mearesplottsal","cypreplottsal","ritchieplottsal")
 tsalsites<-unique(tsal2020$groupedsites)
 tsal2020$salt_surf<-as.numeric(as.character(tsal2020$salt_surf))
 tsal2020$salt_1m<-as.numeric(as.character(tsal2020$salt_1m))
-tsal2020$temp_surf<-as.numeric(as.characteFr(tsal2020$temp_surf))
+tsal2020$temp_surf<-as.numeric(as.character(tsal2020$temp_surf))
 tsal2020$temp_1m<-as.numeric(as.character(tsal2020$temp_1m))
 tsal2020$date<-as.Date(tsal2020$date, origin ="%Y-%m-%d")
 
@@ -1340,7 +1353,7 @@ mtext(side = 4, "Temperature (C)", line = 2.5, cex = 1.5)
 
 write.csv(ritchieplottsal1, paste("meanTS.",tsalsites[i], sep ="_"))
 
-jpeg(paste(tsalsites[i],year,"TS.pdf", sep='_'),5,5)
+png(paste(tsalsites[i],year,"TS.png", sep='_'),5,5)
 dev.off()
 
 }
