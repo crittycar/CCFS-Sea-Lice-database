@@ -312,10 +312,6 @@ licetable.sd.site.date<-data.frame(Motlicetab.mean.site.date[c(1:2, 4)], Coplice
 # The SE table
 licetable.se.site.date<-data.frame(Motlicetab.mean.site.date[c(1:2,5)], Coplicetab.mean.site.date[5], Challicetab.mean.site.date[5], alltab.mean.site.date[5], Attlicetab.mean.site.date[5])
 
-View(licetable.mean.site.date)
-
-View(licetable.sd.site.date)
-
 #ensure all is numeric
 #means
 colnames(licetable.mean.site.date)
@@ -324,6 +320,25 @@ licetable.mean.site.date$copsum.mean<-as.numeric(licetable.mean.site.date$copsum
 licetable.mean.site.date$chalsum.mean<-as.numeric(licetable.mean.site.date$chalsum.mean)
 licetable.mean.site.date$Sum_all_lice.mean<-as.numeric(licetable.mean.site.date$Sum_all_lice.mean)
 licetable.mean.site.date$attachedsum.mean<-as.numeric(licetable.mean.site.date$attachedsum.mean)
+#fixing the dates
+licetable.mean.site.date$date<-as.Date(licetable.mean.site.date$date, format="%d-%b-%Y")
+juliandates<-base::julian(licetable.mean.site.date$date)
+firstday<-min(juliandates)
+no.weeks<-ceiling((max(juliandates)-min(juliandates))/7)
+JDweeklyintervals<-rep(0, times = no.weeks)
+
+for (i in 1:no.weeks) {
+  
+  JDweeklyintervals[i]<-firstday+(7*i)
+}
+
+#Below converts julian to normal date. This is a useful bit of code to recycle... 
+weeklyintervals<-as.Date(JDweeklyintervals, origin=as.Date("1970-01-01"))
+#weekly intervals are given above to use for making weekly means. Now you can calculate means within those dates.
+
+#may need to make the best2020 into julian date
+licetable.mean.site.date$j.date<-julian(licetable.mean.site.date$date)
+
 licetable.mean.site.date$date<-as.Date(licetable.mean.site.date$date, origin = as.Date("1970-01-01"))
 licetable.mean.site.date$date<-format( licetable.mean.site.date$date, format = "%b %d %y")
 
@@ -332,15 +347,12 @@ colnames(licetable.sd.site.date)
 licetable.sd.site.date$motsum.sd<-as.numeric(licetable.sd.site.date$motsum.sd)
 licetable.sd.site.date$copsum.sd<-as.numeric(licetable.sd.site.date$copsum.sd)
 licetable.sd.site.date$chalsum.sd<-as.numeric(licetable.sd.site.date$chalsum.sd)
-li
+class(licetable.mean.site.date$j.date)
 
 ?geom_bar
 ## plot
 #Ritchie
-colnames(licetable.mean.site.date)
 RitchieSub <- subset(licetable.mean.site.date, groupedsites == "Ritchie Bay" )
-weeklyintervals<-format(RitchieSub$date, format= "%b %d %y")
-noyrweekintvl<-format(RitchieSub$date, format = "%b %d" )
 View(RitchieSub)
 #ggplot attempt
 RitchieSub <- subset(RitchieSub,select= -c(groupedsites))
@@ -348,7 +360,6 @@ RitchieSub$motsum.mean <- as.numeric(RitchieSub$motsum.mean)
 RitchieSub$copsum.mean<- as.numeric(RitchieSub$copsum.mean)
 RitchieSub$Sum_all_lice.mean <- as.numeric(RitchieSub$Sum_all_lice.mean)
 RitchieSub$attachedsum.mean<- as.numeric(RitchieSub$attachedsum.mean)
-RitchieSub$date<- as.Date(RitchieSub$date, format = "%b/%d/%Y")
 colnames(RitchieSub)
 
 RitchieSubDos <- tidyr::pivot_longer(RitchieSub, cols=c("motsum.mean","copsum.mean","chalsum.mean","Sum_all_lice.mean","attachedsum.mean"), names_to='variable', 
