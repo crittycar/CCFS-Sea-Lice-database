@@ -360,19 +360,38 @@ RitchieSub$motsum.mean <- as.numeric(RitchieSub$motsum.mean)
 RitchieSub$copsum.mean<- as.numeric(RitchieSub$copsum.mean)
 RitchieSub$Sum_all_lice.mean <- as.numeric(RitchieSub$Sum_all_lice.mean)
 RitchieSub$attachedsum.mean<- as.numeric(RitchieSub$attachedsum.mean)
-colnames(RitchieSub)
+;colnames(RitchieSub)
+#Ritchie SD sub
+RitchieSubSD <- subset(licetable.sd.site.date, groupedsites == "Ritchie Bay" )
+#as.numeric sd
+RitchieSubSD <- subset(RitchieSubSD,select= -c(groupedsites))
+RitchieSubSD <- subset(RitchieSubSD,select= -c(date
+))
 
-RitchieSubDos <- tidyr::pivot_longer(RitchieSub, cols=c("motsum.mean","copsum.mean","chalsum.mean","Sum_all_lice.mean","attachedsum.mean"), names_to='variable', 
+RitchieSubSD$motsum.sd <- as.numeric(RitchieSubSD$motsum.sd)
+RitchieSubSD$copsum.sd<- as.numeric(RitchieSubSD$copsum.sd)
+RitchieSubSD$Sum_all_lice.sd <- as.numeric(RitchieSubSD$Sum_all_lice.sd)
+RitchieSubSD$attachedsum.sd<- as.numeric(RitchieSubSD$attachedsum.sd)
+colnames(RitchieSubSD)
+View(RitchieSubSD)
+View(RitchieSub)
+
+library(reshape2)
+RitchieSubDos <- merge(RitchieSub,RitchieSubSD)
+
+RitchieSubDos <- tidyr::pivot_longer(RitchieSub, cols=c("motsum.mean","motsum.sd","copsum.mean","copsum.sd","chalsum.mean","chalsum.sd","Sum_all_lice.mean","Sum_all_lice.sd","attachedsum.mean","attachedsum.sd"), names_to='variable', 
                     values_to="value")
+View(RitchieSubDos)
 head(RitchieSubDos)
 
 ggplot(RitchieSubDos, aes(x=date, y=value, fill=variable)) + 
 geom_bar(stat = 'identity', position = 'dodge')+
   labs(x = "Date", y = "Mean Abundance") + 
-  theme_classic()
+  theme_classic()+
+  GeomErrorbar
 
 
-
+#####base plotting
 par(mar=c(5.1, 4.1, 4.1, 2.1))
 
 
