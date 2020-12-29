@@ -372,25 +372,29 @@ RitchieSubSD$motsum.sd <- as.numeric(RitchieSubSD$motsum.sd)
 RitchieSubSD$copsum.sd<- as.numeric(RitchieSubSD$copsum.sd)
 RitchieSubSD$Sum_all_lice.sd <- as.numeric(RitchieSubSD$Sum_all_lice.sd)
 RitchieSubSD$attachedsum.sd<- as.numeric(RitchieSubSD$attachedsum.sd)
-colnames(RitchieSubSD)
+colnames(RitchieSubDos)
 View(RitchieSubSD)
 View(RitchieSub)
 
 library(reshape2)
+RitchieSub <- tidyr::pivot_longer(RitchieSub, cols=c("motsum.mean","copsum.mean","chalsum.mean","Sum_all_lice.mean","attachedsum.mean"), names_to='variable', 
+                    values_to="value")
+RitchieSubSD <- tidyr::pivot_longer(RitchieSubSD, cols=c("motsum.sd","copsum.sd","chalsum.sd","Sum_all_lice.sd","attachedsum.sd"), names_to='variable2',
+                                     values_to="value2")
 RitchieSubDos <- merge(RitchieSub,RitchieSubSD)
 
-RitchieSubDos <- tidyr::pivot_longer(RitchieSub, cols=c("motsum.mean","motsum.sd","copsum.mean","copsum.sd","chalsum.mean","chalsum.sd","Sum_all_lice.mean","Sum_all_lice.sd","attachedsum.mean","attachedsum.sd"), names_to='variable', 
-                    values_to="value")
 View(RitchieSubDos)
 head(RitchieSubDos)
-
+?colour
 ggplot(RitchieSubDos, aes(x=date, y=value, fill=variable)) + 
 geom_bar(stat = 'identity', position = 'dodge')+
   labs(x = "Date", y = "Mean Abundance") + 
   theme_classic()+
-  GeomErrorbar
-
-
+  geom_errorbar(aes(ymin=value-value2, ymax=value+value2), width=0.1)+
+  theme(axis.text=element_text(size=14),
+        axis.title.x=element_blank(),
+        axis.text.x=element_text(angle = 45, vjust = 0.8, hjust = .9, color = "black"),
+        axis.text.y=element_text(color="black"))
 #####base plotting
 par(mar=c(5.1, 4.1, 4.1, 2.1))
 
