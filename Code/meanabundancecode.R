@@ -381,7 +381,14 @@ RitchieSub <- tidyr::pivot_longer(RitchieSub, cols=c("motsum.mean","copsum.mean"
                     values_to="value")
 RitchieSubSD <- tidyr::pivot_longer(RitchieSubSD, cols=c("motsum.sd","copsum.sd","chalsum.sd","Sum_all_lice.sd","attachedsum.sd"), names_to='variable2',
                                      values_to="value2")
-RitchieSubDos <- merge(RitchieSub,RitchieSubSD)
+RitchieSubDos <- as.data.frame(cbind(RitchieSub,RitchieSubSD[,2]))
+
+
+peppe <- RColorBrewer::brewer.pal(n = 10, name = "Set3")
+
+cols <- setNames(peppe, unique(zoop.a.s$Zooplankton))
+
+zoop.a.s1$Station <- factor(RitchieSubDos$date = c("H1", "H2", "H3", "S2", "S3", "S4", "S9", "S10", "S11"))
 
 View(RitchieSubDos)
 head(RitchieSubDos)
@@ -390,11 +397,14 @@ ggplot(RitchieSubDos, aes(x=date, y=value, fill=variable)) +
 geom_bar(stat = 'identity', position = 'dodge')+
   labs(x = "Date", y = "Mean Abundance") + 
   theme_classic()+
-  geom_errorbar(aes(ymin=value-value2, ymax=value+value2), width=0.1)+
+  scale_fill_brewer(palette="Greys")+
+  geom_errorbar(data = RitchieSubDos,aes(ymin=value-value2, ymax=value+value2), position=position_dodge(.9), width=0.1)+
   theme(axis.text=element_text(size=14),
         axis.title.x=element_blank(),
         axis.text.x=element_text(angle = 45, vjust = 0.8, hjust = .9, color = "black"),
         axis.text.y=element_text(color="black"))
+
+
 #####base plotting
 par(mar=c(5.1, 4.1, 4.1, 2.1))
 
