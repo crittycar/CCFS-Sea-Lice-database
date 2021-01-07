@@ -320,7 +320,7 @@ licetable.mean.site.date$copsum.mean<-as.numeric(licetable.mean.site.date$copsum
 licetable.mean.site.date$chalsum.mean<-as.numeric(licetable.mean.site.date$chalsum.mean)
 licetable.mean.site.date$Sum_all_lice.mean<-as.numeric(licetable.mean.site.date$Sum_all_lice.mean)
 licetable.mean.site.date$attachedsum.mean<-as.numeric(licetable.mean.site.date$attachedsum.mean)
-#fixing the dates
+#fixing the dates for mean
 licetable.mean.site.date$date<-as.Date(licetable.mean.site.date$date, format="%d-%b-%Y")
 juliandates<-base::julian(licetable.mean.site.date$date)
 firstday<-min(juliandates)
@@ -342,16 +342,41 @@ licetable.mean.site.date$j.date<-julian(licetable.mean.site.date$date)
 licetable.mean.site.date$date<-as.Date(licetable.mean.site.date$date, origin = as.Date("1970-01-01"))
 licetable.mean.site.date$date<-format( licetable.mean.site.date$date, format = "%b %d %y")
 
+#sd date
+
+licetable.sd.site.date$date<-as.Date(licetable.sd.site.date$date, format="%d-%b-%Y")
+juliandates<-base::julian(licetable.sd.site.date$date)
+firstday<-min(juliandates)
+no.weeks<-ceiling((max(juliandates)-min(juliandates))/7)
+JDweeklyintervals<-rep(0, times = no.weeks)
+
+for (i in 1:no.weeks) {
+  
+  JDweeklyintervals[i]<-firstday+(7*i)
+}
+
+#Below converts julian to normal date. This is a useful bit of code to recycle... 
+weeklyintervals<-as.Date(JDweeklyintervals, origin=as.Date("1970-01-01"))
+#weekly intervals are given above to use for making weekly means. Now you can calculate means within those dates.
+
+#may need to make the best2020 into julian date
+licetable.sd.site.date$j.date<-julian(licetable.sd.site.date$date)
+
+licetable.sd.site.date$date<-as.Date(licetable.sd.site.date$date, origin = as.Date("1970-01-01"))
+licetable.sd.site.date$date<-format( licetable.sd.site.date$date, format = "%b %d %y")
+
+
 #sd
 colnames(licetable.sd.site.date)
 licetable.sd.site.date$motsum.sd<-as.numeric(licetable.sd.site.date$motsum.sd)
 licetable.sd.site.date$copsum.sd<-as.numeric(licetable.sd.site.date$copsum.sd)
 licetable.sd.site.date$chalsum.sd<-as.numeric(licetable.sd.site.date$chalsum.sd)
 class(licetable.mean.site.date$j.date)
+#fixing the names
 
 ?geom_bar
 ## plot
-#Ritchie
+#######Ritchie#####
 RitchieSub <- subset(licetable.mean.site.date, groupedsites == "Ritchie Bay" )
 View(RitchieSub)
 #ggplot attempt
@@ -372,24 +397,41 @@ RitchieSubSD$motsum.sd <- as.numeric(RitchieSubSD$motsum.sd)
 RitchieSubSD$copsum.sd<- as.numeric(RitchieSubSD$copsum.sd)
 RitchieSubSD$Sum_all_lice.sd <- as.numeric(RitchieSubSD$Sum_all_lice.sd)
 RitchieSubSD$attachedsum.sd<- as.numeric(RitchieSubSD$attachedsum.sd)
-colnames(RitchieSubDos)
+colnames(RitchieSub)
 View(RitchieSubSD)
 View(RitchieSub)
 
+#Names Ritchie Sub
+colnames(RitchieSub)
+colnames(RitchieSub)[which(names(RitchieSub) == "motsum.mean")] <- "Mean Motile"
+
+colnames(RitchieSub)[which(names(RitchieSub) == "copsum.mean")] <- "Mean Copepodid"
+
+colnames(RitchieSub)[which(names(RitchieSub) == "chalsum.mean")] <- "Mean Chalimus"
+
+colnames(RitchieSub)[which(names(RitchieSub) == "attachedsum.mean")] <- "Mean Attached"
+
+colnames(RitchieSub)[which(names(RitchieSub) == "Sum_all_lice.mean")] <- "Mean All Lice"
+
+#reshape
+
 library(reshape2)
-RitchieSub <- tidyr::pivot_longer(RitchieSub, cols=c("motsum.mean","copsum.mean","chalsum.mean","Sum_all_lice.mean","attachedsum.mean"), names_to='variable', 
+RitchieSub <- tidyr::pivot_longer(RitchieSub, cols=c("Mean Motile","Mean Copepodid","Mean Chalimus","Mean All Lice","Mean Attached"), names_to='variable', 
                     values_to="value")
-RitchieSubSD <- tidyr::pivot_longer(RitchieSubSD, cols=c("motsum.sd","copsum.sd","chalsum.sd","Sum_all_lice.sd","attachedsum.sd"), names_to='variable2',
-                                     values_to="value2")
-RitchieSubDos <- as.data.frame(cbind(RitchieSub,RitchieSubSD[,2]))
 
+RitchieSubSD <- tidyr::pivot_longer(RitchieSubSD, cols=c("motsum.sd","copsum.sd","chalsum.sd","Sum_all_lice.sd","attachedsum.sd"), names_to='variable2',values_to="value2")
+RitchieSubDos <- as.data.frame(cbind(RitchieSub,RitchieSubSD))
 
-peppe <- RColorBrewer::brewer.pal(n = 10, name = "Set3")
+View(RitchieSubDos)
 
-cols <- setNames(peppe, unique(zoop.a.s$Zooplankton))
-
-zoop.a.s1$Station <- factor(RitchieSubDos$date = c("H1", "H2", "H3", "S2", "S3", "S4", "S9", "S10", "S11"))
-
+RitchieSubDos$date <- factor(RitchieSubDos$date, c("Apr 18 20","Apr 24 20","Apr 30 20","May 08 20","May 15 20","May 23 20","May 30 20", "Jun 05 20","Jun 12 20"))
+colnames(RitchieSubDos)
+RitchieSubDos <- subset(RitchieSubDos,select= -c(j.date
+))
+RitchieSubDos <- subset(RitchieSubDos,select= -c(j.date
+))
+RitchieSubDos <- subset(RitchieSubDos,select= -c(variable2
+))
 View(RitchieSubDos)
 head(RitchieSubDos)
 ?colour
@@ -405,36 +447,158 @@ geom_bar(stat = 'identity', position = 'dodge')+
         axis.text.y=element_text(color="black"))
 
 
-#####base plotting
-par(mar=c(5.1, 4.1, 4.1, 2.1))
+
+##########Cypre##### 
+CypreSub <- subset(licetable.mean.site.date, groupedsites == "Cypre River" )
+View(CypreSub)
+#ggplot attempt
+CypreSub <- subset(CypreSub,select= -c(groupedsites))
+CypreSub$motsum.mean <- as.numeric(CypreSub$motsum.mean)
+CypreSub$copsum.mean<- as.numeric(CypreSub$copsum.mean)
+CypreSub$Sum_all_lice.mean <- as.numeric(CypreSub$Sum_all_lice.mean)
+CypreSub$attachedsum.mean<- as.numeric(CypreSub$attachedsum.mean)
+colnames(CypreSub)
+#Cypre SD sub
+CypreSubSD <- subset(licetable.sd.site.date, groupedsites == "Cypre River" )
+#as.numeric sd
+CypreSubSD <- subset(CypreSubSD,select= -c(groupedsites))
+
+CypreSubSD$motsum.sd <- as.numeric(CypreSubSD$motsum.sd)
+CypreSubSD$copsum.sd<- as.numeric(CypreSubSD$copsum.sd)
+CypreSubSD$Sum_all_lice.sd <- as.numeric(CypreSubSD$Sum_all_lice.sd)
+CypreSubSD$attachedsum.sd<- as.numeric(CypreSubSD$attachedsum.sd)
+colnames(CypreSub)
+View(CypreSubSD)
+View(CypreSub)
+unique(CypreSubDos$date)
+
+#Names Cypre Sub
+colnames(CypreSub)
+colnames(CypreSub)[which(names(CypreSub) == "motsum.mean")] <- "Mean Motile"
+
+colnames(CypreSub)[which(names(CypreSub) == "copsum.mean")] <- "Mean Copepodid"
+
+colnames(CypreSub)[which(names(CypreSub) == "chalsum.mean")] <- "Mean Chalimus"
+
+colnames(CypreSub)[which(names(CypreSub) == "attachedsum.mean")] <- "Mean Attached"
+
+colnames(CypreSub)[which(names(CypreSub) == "Sum_all_lice.mean")] <- "Mean All Lice"
 
 
-mp<- barplot(t(licetable.mean.site.date), ylim=c(0,50), yaxt = "n", 
-             main = "Clayoquot Mean Lice Abundance per Fish", 
-             col=c("darkgreen","dodgerblue","red","darkgray"), 
-             cex.lab = 1.5, cex.axis = 2, beside = T,
-             names.arg = noyrweekintvl, axes = TRUE, ylab ="Mean Lice per Fish")
+#reshape
 
-segments( x0 = mp, t(allsdplneg), x1 = mp, t(allsdpu), lwd = 1)  # confidence intervals
-arrows(x0 = mp, t(allsdplneg), x1 = mp, t(allsdpu), lwd = 0.75, angle = 90,
-       code = 3, length = 0.05)
+library(reshape2)
+CypreSub <- tidyr::pivot_longer(CypreSub, cols=c("Mean Motile","Mean Copepodid","Mean Chalimus","Mean All Lice","Mean Attached"), names_to='variable', 
+                                  values_to="value")
+CypreSubSD <- tidyr::pivot_longer(CypreSubSD, cols=c("motsum.sd","copsum.sd","chalsum.sd","Sum_all_lice.sd","attachedsum.sd"), names_to='variable2',
+                                    values_to="value2")
+CypreSubDos <- as.data.frame(cbind(CypreSub,CypreSubSD))
+View(CypreSubSD)
+colnames(CypreSubDos)
+CypreSubDos <- subset(CypreSubDos,select= -c(j.date
+))
+CypreSubDos <- subset(CypreSubDos,select= -c(j.date
+))
+CypreSubDos <- subset(CypreSubDos,select= -c(j.date
+))
+CypreSubDos <- subset(CypreSubDos,select= -c(date.1))
+CypreSubDos <- subset(CypreSubDos,select= -c(variable2))
+CypreSubDos <- subset(CypreSubDos,select= -c(date.1))
 
-legend("topleft", bty = "n", col = c("darkgreen","dodgerblue","red","darkgray"), lwd = 3, cex = 1, legend = c("Copepodid", "Chalimus", "Motile", "Total"))
-axis(side = 2, at = seq(from=0, to=33, by=3), las = 1)
+CypreSubDos$date <- factor(CypreSubDos$date, c("Apr 18 20","Apr 24 20","Apr 30 20","May 08 20","May 15 20","May 23 20","May 30 20", "Jun 05 20","Jun 12 20"))
 
-dev.copy(png,'OutputFigures/ClayoquotMeanLiceAbundancePerFish_2020.png')
-dev.off()
-warnings()
-## end plot
+View(CypreSubDos)
+
+head(CypreSubDos)
+?colour
+ggplot(CypreSubDos, aes(x=date, y=value, fill=variable)) + 
+  geom_bar(stat = 'identity', position = 'dodge')+
+  labs(x = "Date", y = "Mean Abundance") + 
+  theme_classic()+
+  scale_fill_brewer(palette="Greys")+
+  geom_errorbar(data = CypreSubDos,aes(ymin=value-value2, ymax=value+value2), position=position_dodge(.9), width=0.1)+
+  theme(axis.text=element_text(size=14),
+        axis.title.x=element_blank(),
+        axis.text.x=element_text(angle = 45, vjust = 0.8, hjust = .9, color = "black"),
+        axis.text.y=element_text(color="black"))
 
 
-dir.out <- "C:/Users/Rowen/OneDrive/Desktop/github/CCFS-Sea-Lice-database/Data/OutputData"
-
-setwd(dir.out)
-write.csv(licetable.mean.site.date, paste(yr, "mean_lice_by_site_date.csv", sep = "_"))
 
 
 
 
 
 
+#########North Meares#####
+MearesSub <- subset(licetable.mean.site.date, groupedsites == "North Meares" )
+View(MearesSub)
+#ggplot attempt
+MearesSub <- subset(MearesSub,select= -c(groupedsites))
+MearesSub$motsum.mean <- as.numeric(MearesSub$motsum.mean)
+MearesSub$copsum.mean<- as.numeric(MearesSub$copsum.mean)
+MearesSub$Sum_all_lice.mean <- as.numeric(MearesSub$Sum_all_lice.mean)
+MearesSub$attachedsum.mean<- as.numeric(MearesSub$attachedsum.mean)
+colnames(MearesSub)
+#Meares SD sub
+MearesSubSD <- subset(licetable.sd.site.date, groupedsites == "North Meares" )
+#as.numeric sd
+MearesSubSD <- subset(MearesSubSD,select= -c(groupedsites))
+
+MearesSubSD$motsum.sd <- as.numeric(MearesSubSD$motsum.sd)
+MearesSubSD$copsum.sd<- as.numeric(MearesSubSD$copsum.sd)
+MearesSubSD$Sum_all_lice.sd <- as.numeric(MearesSubSD$Sum_all_lice.sd)
+MearesSubSD$attachedsum.sd<- as.numeric(MearesSubSD$attachedsum.sd)
+colnames(MearesSub)
+View(MearesSubSD)
+View(MearesSub)
+unique(MearesSubDos$date)
+
+#Names Meares Sub
+colnames(MearesSub)
+colnames(MearesSub)[which(names(MearesSub) == "motsum.mean")] <- "Mean Motile"
+
+colnames(MearesSub)[which(names(MearesSub) == "copsum.mean")] <- "Mean Copepodid"
+
+colnames(MearesSub)[which(names(MearesSub) == "chalsum.mean")] <- "Mean Chalimus"
+
+colnames(MearesSub)[which(names(MearesSub) == "attachedsum.mean")] <- "Mean Attached"
+
+colnames(MearesSub)[which(names(MearesSub) == "Sum_all_lice.mean")] <- "Mean All Lice"
+
+
+#reshape
+
+library(reshape2)
+MearesSub <- tidyr::pivot_longer(MearesSub, cols=c("Mean Motile","Mean Copepodid","Mean Chalimus","Mean All Lice","Mean Attached"), names_to='variable', 
+                                values_to="value")
+MearesSubSD <- tidyr::pivot_longer(MearesSubSD, cols=c("motsum.sd","copsum.sd","chalsum.sd","Sum_all_lice.sd","attachedsum.sd"), names_to='variable2',
+                                  values_to="value2")
+MearesSubDos <- as.data.frame(cbind(MearesSub,MearesSubSD))
+View(MearesSubSD)
+colnames(MearesSubDos)
+MearesSubDos <- subset(MearesSubDos,select= -c(j.date
+))
+MearesSubDos <- subset(MearesSubDos,select= -c(j.date
+))
+MearesSubDos <- subset(MearesSubDos,select= -c(j.date
+))
+MearesSubDos <- subset(MearesSubDos,select= -c(date.1))
+MearesSubDos <- subset(MearesSubDos,select= -c(variable2))
+MearesSubDos <- subset(MearesSubDos,select= -c(date.1))
+unique(MearesSubDos$date)
+MearesSubDos$date <- factor(MearesSubDos$date, c("Apr 18 20","Apr 24 20","Apr 30 20","May 08 20","May 15 20","May 23 20","May 30 20","Jun 12 20"))
+
+View(MearesSubDos)
+
+head(MearesSubDos)
+?colour
+ggplot(MearesSubDos, aes(x=date, y=value, fill=variable)) + 
+  geom_bar(stat = 'identity', position = 'dodge')+
+  labs(x = "Date", y = "Mean Abundance") + 
+  theme_classic()+
+  scale_fill_brewer(palette="Greys")+
+  geom_errorbar(data = MearesSubDos,aes(ymin=value-value2, ymax=value+value2), position=position_dodge(.9), width=0.1)+
+  theme(axis.text=element_text(size=14),
+        axis.title.x=element_blank(),
+        axis.text.x=element_text(angle = 45, vjust = 0.8, hjust = .9, color = "black"),
+        axis.text.y=element_text(color="black"))
