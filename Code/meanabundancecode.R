@@ -471,7 +471,6 @@ RitchieSub <- tidyr::pivot_longer(RitchieSub, cols=c("Mean Motile","Mean Copepod
 RitchieSubSD <- tidyr::pivot_longer(RitchieSubSD, cols=c("motsum.sd","copsum.sd","chalsum.sd","Sum_all_lice.sd","attachedsum.sd"), names_to='variable2',values_to="value2")
 RitchieSubDos <- as.data.frame(cbind(RitchieSub,RitchieSubSD))
 
-View(RitchieSubDos)
 
 RitchieSubDos$date <- factor(RitchieSubDos$date, c("Apr 18 20","Apr 24 20","Apr 30 20","May 08 20","May 15 20","May 23 20","May 30 20", "Jun 05 20","Jun 12 20"))
 colnames(RitchieSubDos)
