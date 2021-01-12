@@ -229,6 +229,7 @@ best2020$j.date<-julian(best2020$date)
 JDweeklyintervalsloops<-c(0, JDweeklyintervals)
 best2020$weeklyintvl<-rep(0, each = length(best2020$date))
 #using subsets to add data of appropriate date to the vectors
+
 for (i in 1:(length(JDweeklyintervalsloops)-1)) {
   loopintvl<-subset(best2020, best2020$j.date > JDweeklyintervalsloops[i] & best2020$j.date <= JDweeklyintervalsloops[i+1])
   positionsforaddingtobest2020<-which(best2020$j.date > JDweeklyintervalsloops[i] & best2020$j.date <= JDweeklyintervalsloops[i+1])
@@ -270,7 +271,7 @@ for (i in 1 : length(focussitelist)){
 loopfocussite<-focussitelist[i]
 loopsfocusdata<-subset(focusweeksitelice, groupedsites == paste(loopfocussite))
 
-
+unique(Ritchiedates$date)
 
 for (j in 1:length(JDweeklyintervals)) {
   mean.boot<-NULL
