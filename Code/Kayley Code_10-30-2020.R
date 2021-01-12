@@ -1179,6 +1179,26 @@ dev.copy(png,'Outputfigures/Clayoquot.weekly.mean.lice.2020.png')
 ##ASSIGNING WEEKLY INTERVALS TO ALL THE dates in the best2020 data set 
 #weekly intervals.
 #set up vectors to hold data
+
+
+#making a table with weekly intervals.
+juliandates<-julian(best2020$date)
+firstday<-min(juliandates)
+no.weeks<-ceiling((max(juliandates)-min(juliandates))/7)
+JDweeklyintervals<-rep(0, times = no.weeks)
+
+for (i in 1:no.weeks) {
+  
+  JDweeklyintervals[i]<-firstday+(7*i)
+}
+
+#Below converts julian to normal date. This is a useful bit of code to recycle... 
+weeklyintervals<-as.Date(JDweeklyintervals, origin=as.Date("1970-01-01"))
+#weekly intervals are given above to use for making weekly means. Now you can calculate means within those dates.
+
+#may need to make the best2020 into julian date
+best2020$j.date<-julian(best2020$date)
+
 JDweeklyintervalsloops<-c(0, JDweeklyintervals)
 best2020$weeklyintvl<-rep(0, each = length(best2020$date))
 #using subsets to add data of appropriate date to the vectors

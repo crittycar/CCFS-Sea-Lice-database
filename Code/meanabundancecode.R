@@ -289,6 +289,54 @@ Motlicetab.mean.site.date<-do.call(data.frame, aggregate(motsum~groupedsites + d
 require("pracma")
 Motlicetab.mean.site.date$mot.SE <- nthroot(Motlicetab$motsum.sd, length(Motlicetab$motsum.sd))
 
+#View(best2020)
+#library(MASS)
+#### AIC of Negative Binomial Distribution GLMs ####
+#mot.nbin <- glm.nb(motsum ~ 1, data = best2020)
+#mot.lin <- glm(motsum ~ 1, data = best2020)
+#mot.pois <- glm(motsum ~ 1, data = best2020, family = 'poisson')
+#mot.nbin$theta
+#summary(mot.nbin)
+
+#AIC(mot.nbin, mot.pois, mot.lin)
+
+#library(boot)
+
+# Formula for model
+#form <- motsum ~ 1
+
+# function to obtain theta estimate from the data 
+#rsq <- function(formula, data, indices) {
+ # d <- data[indices,] # allows boot to select sample 
+  #library(MASS)
+  #regtest <- glm.nb(formula, data = d, init.theta = 1)
+  
+  #return(regtest$theta)
+#} 
+# bootstrapping with 1000 replications 
+#results <- boot(data=best2020, statistic=rsq, 
+ #               R=1000, formula=motsum~1)
+
+# view results
+#results 
+#plot(results)
+
+# get 95% confidence interval 
+#boot.ci(results, type="bca")
+
+#View(best2020)
+#### Plotting Neg Binomial Dist of Total Parasite Count ####
+#mean(best2020$motsum)
+#?geom_histogram
+#hist(best2020$motsum)
+#library(ggplot2)
+#parasiteplot <- ggplot(best2020, aes(x = motsum)) + 
+ # geom_histogram(binwidth = 2, fill = "white", color = "black") + 
+  #geom_smooth(aes(y = location),method = "glm", se = FALSE, method.args = list(family = negative.binomial(2.552326)))
+
+#parasiteplot
+
+
 Attlicetab.mean.site.date<-do.call(data.frame, aggregate(attachedsum~groupedsites + date, data = best2020, function(x) c(mean = mean(x), sd = sd(x))))
 require("pracma")
 Attlicetab.mean.site.date$att.SE <- nthroot(Motlicetab$motsum.sd, length(Motlicetab$motsum.sd))
@@ -311,7 +359,7 @@ licetable.mean.site.date<-data.frame(Motlicetab.mean.site.date[1:3], Coplicetab.
 licetable.sd.site.date<-data.frame(Motlicetab.mean.site.date[c(1:2, 4)], Coplicetab.mean.site.date[4], Challicetab.mean.site.date[4], alltab.mean.site.date[4], Attlicetab.mean.site.date[4])
 # The SE table
 licetable.se.site.date<-data.frame(Motlicetab.mean.site.date[c(1:2,5)], Coplicetab.mean.site.date[5], Challicetab.mean.site.date[5], alltab.mean.site.date[5], Attlicetab.mean.site.date[5])
-
+View(licetable.se.site.date)
 #ensure all is numeric
 #means
 colnames(licetable.mean.site.date)
@@ -373,7 +421,7 @@ licetable.sd.site.date$copsum.sd<-as.numeric(licetable.sd.site.date$copsum.sd)
 licetable.sd.site.date$chalsum.sd<-as.numeric(licetable.sd.site.date$chalsum.sd)
 class(licetable.mean.site.date$j.date)
 #fixing the names
-
+###CI's bootstraping####
 ?geom_bar
 ## plot
 #######Ritchie#####
@@ -385,7 +433,7 @@ RitchieSub$motsum.mean <- as.numeric(RitchieSub$motsum.mean)
 RitchieSub$copsum.mean<- as.numeric(RitchieSub$copsum.mean)
 RitchieSub$Sum_all_lice.mean <- as.numeric(RitchieSub$Sum_all_lice.mean)
 RitchieSub$attachedsum.mean<- as.numeric(RitchieSub$attachedsum.mean)
-;colnames(RitchieSub)
+colnames(RitchieSub)
 #Ritchie SD sub
 RitchieSubSD <- subset(licetable.sd.site.date, groupedsites == "Ritchie Bay" )
 #as.numeric sd
@@ -412,6 +460,7 @@ colnames(RitchieSub)[which(names(RitchieSub) == "chalsum.mean")] <- "Mean Chalim
 colnames(RitchieSub)[which(names(RitchieSub) == "attachedsum.mean")] <- "Mean Attached"
 
 colnames(RitchieSub)[which(names(RitchieSub) == "Sum_all_lice.mean")] <- "Mean All Lice"
+
 
 #reshape
 
@@ -440,7 +489,6 @@ geom_bar(stat = 'identity', position = 'dodge')+
   labs(x = "Date", y = "Mean Abundance") + 
   theme_classic()+
   scale_fill_brewer(palette="Greys")+
-  geom_errorbar(data = RitchieSubDos,aes(ymin=value-value2, ymax=value+value2), position=position_dodge(.9), width=0.1)+
   theme(axis.text=element_text(size=14),
         axis.title.x=element_blank(),
         axis.text.x=element_text(angle = 45, vjust = 0.8, hjust = .9, color = "black"),
@@ -600,5 +648,4 @@ ggplot(MearesSubDos, aes(x=date, y=value, fill=variable)) +
   geom_errorbar(data = MearesSubDos,aes(ymin=value-value2, ymax=value+value2), position=position_dodge(.9), width=0.1)+
   theme(axis.text=element_text(size=14),
         axis.title.x=element_blank(),
-        axis.text.x=element_text(angle = 45, vjust = 0.8, hjust = .9, color = "black"),
-        axis.text.y=element_text(color="black"))
+        axis.text.x=element_text(angle = 45, vjust = 0.8, hjust = .9, color = "black"), axis.text.y=element_text(color="black"))
