@@ -423,6 +423,7 @@ class(licetable.mean.site.date$j.date)
 #fixing the names
 ###CI's bootstraping####
 ?geom_bar
+View(licetable.mean.site.date)
 ## plot
 #######Ritchie#####
 RitchieSub <- subset(licetable.mean.site.date, groupedsites == "Ritchie Bay" )
@@ -461,9 +462,9 @@ colnames(RitchieSub)[which(names(RitchieSub) == "attachedsum.mean")] <- "Mean At
 
 colnames(RitchieSub)[which(names(RitchieSub) == "Sum_all_lice.mean")] <- "Mean All Lice"
 
-
+write.csv(RitchieSubDos,file.path(data.output.path,"RitchieSub.csv"))
 #reshape
-
+View(RitchieSub)
 library(reshape2)
 RitchieSub <- tidyr::pivot_longer(RitchieSub, cols=c("Mean Motile","Mean Copepodid","Mean Chalimus","Mean All Lice","Mean Attached"), names_to='variable', 
                     values_to="value")
